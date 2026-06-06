@@ -10,8 +10,8 @@
  * ──────────────────────────────────────────────────────
  */
 
-const SUPABASE_URL    = 'https://YOUR_PROJECT_ID.supabase.co';
-const SUPABASE_ANON   = 'YOUR_ANON_PUBLIC_KEY';   // safe to expose client-side
+const SUPABASE_URL    = 'https://eynwgdoicbbszfngywxf.supabase.co';
+const SUPABASE_ANON   = 'sb_publishable__uPzfujCdOFFN5Y_WP10Mw_WrjR2bSC';   // safe to expose client-side
 
 /**
  * Generic REST fetcher for Supabase PostgREST.
