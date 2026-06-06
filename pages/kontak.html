@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kontak — Dede Separman</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet" />
+</head>
+<body class="page-kontak">
+
+  <header class="navbar scrolled" id="navbar">
+    <div class="navbar__inner">
+      <a href="../index.html" class="navbar__logo">Dede Separman</a>
+      <nav class="navbar__menu" id="navMenu">
+        <a href="../index.html" class="navbar__link">Home</a>
+        <a href="tentang.html" class="navbar__link">Tentang</a>
+        <a href="skill.html" class="navbar__link">Skill</a>
+        <a href="proyek.html" class="navbar__link">Proyek</a>
+        <a href="layanan.html" class="navbar__link">Layanan</a>
+        <a href="blog.html" class="navbar__link">Blog</a>
+        <a href="kontak.html" class="navbar__link active">Kontak</a>
+      </nav>
+      <div class="navbar__lang">
+        <a href="#" class="lang-btn active" data-lang="id">ID</a>
+        <a href="#" class="lang-btn" data-lang="en">EN</a>
+      </div>
+      <button class="navbar__burger" id="burgerBtn"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main>
+    <!-- PAGE HEADER -->
+    <section class="page-header">
+      <div class="container">
+        <p class="section-label">Mari Diskusi</p>
+        <h1 class="page-title">Hubungi <span class="accent">Saya</span></h1>
+        <p class="page-subtitle">Ada proyek menarik? Butuh otomatisasi? Jangan ragu untuk berkirim pesan.</p>
+      </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section class="section-pad">
+      <div class="container">
+        <div class="contact-grid">
+
+          <!-- INFO -->
+          <div class="contact-info">
+            <h2 class="contact-info__title">Info Kontak</h2>
+            <p class="contact-info__body">
+              Tersedia untuk proyek freelance, konsultasi, maupun kolaborasi jangka panjang.
+              Biasanya merespons dalam 24 jam.
+            </p>
+            <ul class="contact-details">
+              <li>
+                <span class="contact-icon">📧</span>
+                <div>
+                  <strong>Email</strong>
+                  <a href="mailto:dede@example.com">dede@example.com</a>
+                </div>
+              </li>
+              <li>
+                <span class="contact-icon">📍</span>
+                <div>
+                  <strong>Lokasi</strong>
+                  <span>Bandung, Jawa Barat, Indonesia</span>
+                </div>
+              </li>
+              <li>
+                <span class="contact-icon">💼</span>
+                <div>
+                  <strong>LinkedIn</strong>
+                  <a href="https://linkedin.com/in/dedeseparman" target="_blank">linkedin.com/in/dedeseparman</a>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- FORM -->
+          <div class="contact-form-wrap">
+            <form id="contactForm" novalidate>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="name">Nama</label>
+                  <input type="text" id="name" name="name" placeholder="Nama lengkap Anda" required />
+                </div>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" id="email" name="email" placeholder="email@contoh.com" required />
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="subject">Subjek</label>
+                <input type="text" id="subject" name="subject" placeholder="Topik diskusi..." />
+              </div>
+              <div class="form-group">
+                <label for="message">Pesan</label>
+                <textarea id="message" name="message" placeholder="Ceritakan kebutuhan proyek Anda..." required></textarea>
+              </div>
+              <button type="submit" class="btn btn--primary btn--lg">Kirim Pesan</button>
+              <p id="formStatus" class="form-status"></p>
+            </form>
+          </div>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p class="footer__brand">Dede Separman</p>
+      <p class="footer__copy">© <span id="year"></span> Dede Separman.</p>
+      <nav class="footer__nav">
+        <a href="kontak.html">Kontak</a>
+        <a href="blog.html">Blog</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+</html>

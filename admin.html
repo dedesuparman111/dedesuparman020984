@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Portal — Dede Separman</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet" />
+  <style>
+    /* ── TOKENS ── */
+    :root {
+      --red:      #E63946;
+      --red-dark: #c0303c;
+      --black:    #1A1A2E;
+      --white:    #ffffff;
+      --gray-50:  #F7F8FA;
+      --gray-100: #EDEEF2;
+      --gray-300: #C4C6D0;
+      --gray-500: #7B7E8C;
+      --gray-700: #3D3F4E;
+      --success:  #2ecc71;
+      --warning:  #f39c12;
+      --danger:   #e74c3c;
+      --font-head: 'Bebas Neue', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --radius:   10px;
+      --shadow:   0 4px 20px rgba(26,26,46,.10);
+      --shadow-lg:0 8px 40px rgba(26,26,46,.14);
+      --sidebar-w: 240px;
+      --topbar-h:  60px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 15px; scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      background: var(--gray-50);
+      color: var(--black);
+      min-height: 100vh;
+    }
+
+    /* ── LOGIN SCREEN ── */
+    #loginScreen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--black);
+      position: fixed; inset: 0; z-index: 1000;
+      transition: opacity .4s;
+    }
+    #loginScreen.hidden { opacity: 0; pointer-events: none; }
+
+    .login-box {
+      background: var(--white);
+      border-radius: 16px;
+      padding: 48px 40px;
+      width: 380px;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .login-box::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 4px;
+      background: var(--red);
+    }
+    .login-logo {
+      font-family: var(--font-head);
+      font-size: 2rem;
+      color: var(--black);
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .login-logo span { color: var(--red); }
+    .login-sub {
+      font-size: .8rem;
+      color: var(--gray-500);
+      margin-bottom: 32px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+    .login-box label {
+      display: block;
+      text-align: left;
+      font-size: .8rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .login-box input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid var(--gray-100);
+      border-radius: var(--radius);
+      font-family: var(--font-body);
+      font-size: .95rem;
+      background: var(--gray-50);
+      color: var(--black);
+      margin-bottom: 18px;
+      transition: border-color .2s;
+      outline: none;
+    }
+    .login-box input:focus { border-color: var(--red); background: var(--white); }
+    .login-btn {
+      width: 100%;
+      padding: 13px;
+      background: var(--red);
+      color: var(--white);
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      letter-spacing: 1.5px;
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+    .login-btn:hover { background: var(--red-dark); }
+    .login-btn:active { transform: scale(.98); }
+    .login-error {
+      margin-top: 14px;
+      font-size: .85rem;
+      color: var(--danger);
+      display: none;
+    }
+    .login-error.show { display: block; }
+
+    /* ── LAYOUT ── */
+    #adminApp {
+      display: none;
+      min-height: 100vh;
+    }
+    #adminApp.visible { display: flex; }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--black);
+      color: var(--white);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0;
+      height: 100vh;
+      z-index: 100;
+      overflow-y: auto;
+    }
+    .sidebar__logo {
+      padding: 24px 20px 18px;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .sidebar__logo h1 {
+      font-family: var(--font-head);
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+      color: var(--white);
+    }
+    .sidebar__logo h1 span { color: var(--red); }
+    .sidebar__logo p {
+      font-size: .7rem;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-top: 2px;
+    }
+    .sidebar__section {
+      padding: 12px 12px 4px;
+      font-size: .65rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--gray-500);
+      font-weight: 700;
+    }
+    .sidebar__nav { flex: 1; padding: 8px 0; }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      font-size: .88rem;
+      color: rgba(255,255,255,.65);
+      cursor: pointer;
+      border-radius: 0;
+      transition: all .15s;
+      border-left: 3px solid transparent;
+      user-select: none;
+    }
+    .nav-item:hover { color: var(--white); background: rgba(255,255,255,.05); }
+    .nav-item.active { color: var(--white); background: rgba(230,57,70,.12); border-left-color: var(--red); }
+    .nav-item .ni { font-size: 1rem; width: 20px; text-align: center; }
+    .sidebar__footer {
+      padding: 16px 20px;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .logout-btn {
+      width: 100%;
+      padding: 9px 14px;
+      background: rgba(230,57,70,.15);
+      color: var(--red);
+      border: 1px solid rgba(230,57,70,.3);
+      border-radius: var(--radius);
+      font-family: var(--font-body);
+      font-size: .85rem;
+      cursor: pointer;
+      transition: all .2s;
+      font-weight: 600;
+    }
+    .logout-btn:hover { background: var(--red); color: var(--white); }
+
+    /* MAIN AREA */
+    .main-area {
+      margin-left: var(--sidebar-w);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* TOPBAR */
+    .topbar {
+      height: var(--topbar-h);
+      background: var(--white);
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      gap: 16px;
+    }
+    .topbar__title {
+      font-family: var(--font-head);
+      font-size: 1.3rem;
+      letter-spacing: .5px;
+      flex: 1;
+    }
+    .topbar__user {
+      font-size: .82rem;
+      color: var(--gray-500);
+    }
+    .topbar__badge {
+      background: var(--red);
+      color: var(--white);
+      font-size: .7rem;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 20px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* CONTENT */
+    .content {
+      padding: 28px;
+      flex: 1;
+    }
+
+    /* PANELS */
+    .panel { display: none; }
+    .panel.active { display: block; }
+
+    /* TOAST */
+    #toast {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      background: var(--black);
+      color: var(--white);
+      padding: 12px 20px;
+      border-radius: var(--radius);
+      font-size: .88rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      z-index: 9999;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .3s;
+      border-left: 4px solid var(--red);
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+    #toast.success { border-left-color: var(--success); }
+    #toast.error { border-left-color: var(--danger); }
+
+    /* CARDS & GRID */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    .section-header h2 {
+      font-family: var(--font-head);
+      font-size: 1.6rem;
+      letter-spacing: .5px;
+    }
+    .section-header h2 span { color: var(--red); }
+
+    /* STATS ROW (dashboard) */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .stat-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border-top: 3px solid var(--red);
+    }
+    .stat-card__val {
+      font-family: var(--font-head);
+      font-size: 2.2rem;
+      color: var(--red);
+      line-height: 1;
+    }
+    .stat-card__label { font-size: .8rem; color: var(--gray-500); margin-top: 4px; }
+
+    /* TABLE */
+    .table-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+    .table-card table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .table-card th {
+      background: var(--gray-50);
+      padding: 11px 16px;
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
+      color: var(--gray-500);
+      text-align: left;
+      border-bottom: 1px solid var(--gray-100);
+    }
+    .table-card td {
+      padding: 12px 16px;
+      font-size: .88rem;
+      border-bottom: 1px solid var(--gray-50);
+      vertical-align: middle;
+    }
+    .table-card tr:last-child td { border-bottom: none; }
+    .table-card tr:hover td { background: var(--gray-50); }
+    .emoji-cell { font-size: 1.4rem; }
+    .tag-pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: .72rem;
+      font-weight: 600;
+      background: rgba(230,57,70,.1);
+      color: var(--red);
+    }
+    .level-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .level-bar__track {
+      flex: 1;
+      height: 5px;
+      background: var(--gray-100);
+      border-radius: 10px;
+      overflow: hidden;
+      max-width: 80px;
+    }
+    .level-bar__fill {
+      height: 100%;
+      background: var(--red);
+      border-radius: 10px;
+    }
+    .status-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-right: 6px;
+    }
+    .status-dot.published { background: var(--success); }
+    .status-dot.draft { background: var(--gray-300); }
+
+    /* ACTION BTNS */
+    .actions { display: flex; gap: 6px; }
+    .btn-sm {
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: .78rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .15s;
+      font-family: var(--font-body);
+    }
+    .btn-edit { background: var(--gray-100); color: var(--black); }
+    .btn-edit:hover { background: var(--gray-300); }
+    .btn-del { background: rgba(231,76,60,.1); color: var(--danger); }
+    .btn-del:hover { background: var(--danger); color: var(--white); }
+    .btn-view { background: rgba(52,152,219,.1); color: #3498db; }
+    .btn-view:hover { background: #3498db; color: var(--white); }
+
+    /* MAIN BUTTONS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      font-family: var(--font-body);
+      font-size: .88rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .15s;
+    }
+    .btn-primary { background: var(--red); color: var(--white); }
+    .btn-primary:hover { background: var(--red-dark); }
+    .btn-secondary { background: var(--gray-100); color: var(--black); }
+    .btn-secondary:hover { background: var(--gray-300); }
+    .btn-success { background: rgba(46,204,113,.15); color: #27ae60; border: 1px solid rgba(46,204,113,.3); }
+    .btn-success:hover { background: var(--success); color: var(--white); }
+
+    /* MODAL */
+    .modal-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(26,26,46,.6);
+      z-index: 200;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px;
+      overflow-y: auto;
+      backdrop-filter: blur(2px);
+    }
+    .modal-backdrop.hidden { display: none; }
+    .modal {
+      background: var(--white);
+      border-radius: 14px;
+      width: 100%;
+      max-width: 580px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      animation: slideUp .25s ease;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(30px); opacity: 0; }
+      to   { transform: translateY(0); opacity: 1; }
+    }
+    .modal__head {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal__head h3 {
+      font-family: var(--font-head);
+      font-size: 1.3rem;
+      letter-spacing: .5px;
+    }
+    .modal__close {
+      width: 32px; height: 32px;
+      border: none;
+      background: var(--gray-100);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s;
+    }
+    .modal__close:hover { background: var(--gray-300); }
+    .modal__body { padding: 24px; }
+    .modal__foot {
+      padding: 16px 24px;
+      border-top: 1px solid var(--gray-100);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* FORM */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .form-row.full { grid-template-columns: 1fr; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--gray-700);
+      margin-bottom: 6px;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 10px 13px;
+      border: 1.5px solid var(--gray-100);
+      border-radius: var(--radius);
+      font-family: var(--font-body);
+      font-size: .9rem;
+      background: var(--gray-50);
+      color: var(--black);
+      outline: none;
+      transition: border-color .2s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus { border-color: var(--red); background: var(--white); }
+    .form-group textarea { resize: vertical; min-height: 90px; }
+    .form-group .hint {
+      font-size: .73rem;
+      color: var(--gray-500);
+      margin-top: 4px;
+    }
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 0;
+    }
+    .toggle {
+      width: 42px; height: 22px;
+      background: var(--gray-300);
+      border-radius: 20px;
+      position: relative;
+      cursor: pointer;
+      border: none;
+      transition: background .2s;
+      flex-shrink: 0;
+    }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 16px; height: 16px;
+      background: var(--white);
+      border-radius: 50%;
+      top: 3px; left: 3px;
+      transition: transform .2s;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+    .toggle.on { background: var(--red); }
+    .toggle.on::after { transform: translateX(20px); }
+
+    /* MESSAGES */
+    .message-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 20px;
+      margin-bottom: 12px;
+      border-left: 3px solid var(--gray-100);
+      transition: border-color .2s;
+    }
+    .message-card.unread { border-left-color: var(--red); }
+    .message-card__meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .message-card__name { font-weight: 700; font-size: .95rem; }
+    .message-card__email { font-size: .8rem; color: var(--gray-500); }
+    .message-card__date { font-size: .75rem; color: var(--gray-500); margin-left: auto; }
+    .message-card__subject { font-weight: 600; font-size: .85rem; margin-bottom: 6px; color: var(--gray-700); }
+    .message-card__body { font-size: .88rem; color: var(--gray-500); line-height: 1.55; }
+    .unread-badge {
+      background: var(--red);
+      color: var(--white);
+      font-size: .65rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 10px;
+      text-transform: uppercase;
+    }
+
+    /* HERO EDIT */
+    .hero-preview {
+      background: var(--black);
+      border-radius: var(--radius);
+      padding: 30px;
+      margin-bottom: 20px;
+      color: var(--white);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-preview::before {
+      content: 'PREVIEW';
+      position: absolute;
+      top: 12px; right: 14px;
+      font-size: .65rem;
+      letter-spacing: 2px;
+      color: rgba(255,255,255,.3);
+      font-weight: 700;
+    }
+    .hero-preview h1 { font-family: var(--font-head); font-size: 2rem; }
+    .hero-preview h1 span { color: var(--red); }
+    .hero-preview p { color: rgba(255,255,255,.65); margin-top: 8px; font-size: .9rem; }
+
+    /* SETTINGS */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .settings-card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+    }
+    .settings-card h3 {
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    /* LOADING */
+    .loading-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 20px;
+    }
+    .loading-row {
+      height: 38px;
+      background: linear-gradient(90deg, var(--gray-50) 25%, var(--gray-100) 50%, var(--gray-50) 75%);
+      background-size: 200% 100%;
+      border-radius: 6px;
+      animation: shimmer 1.4s infinite;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+
+    /* EMPTY STATE */
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--gray-500);
+    }
+    .empty-state .emoji { font-size: 3rem; margin-bottom: 12px; }
+    .empty-state p { font-size: .9rem; }
+
+    /* RESPONSIVE tweaks */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); transition: transform .3s; }
+      .sidebar.open { transform: translateX(0); }
+      .main-area { margin-left: 0; }
+      .form-row { grid-template-columns: 1fr; }
+      .settings-grid { grid-template-columns: 1fr; }
+    }
+
+    /* CONFIRM DELETE */
+    .confirm-overlay {
+      position: fixed; inset: 0;
+      background: rgba(26,26,46,.7);
+      z-index: 300;
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(2px);
+    }
+    .confirm-overlay.hidden { display: none; }
+    .confirm-box {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 32px;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+    }
+    .confirm-box .emoji { font-size: 2.5rem; margin-bottom: 12px; }
+    .confirm-box h3 { font-size: 1.1rem; margin-bottom: 8px; }
+    .confirm-box p { font-size: .88rem; color: var(--gray-500); margin-bottom: 24px; }
+    .confirm-box .btns { display: flex; gap: 10px; justify-content: center; }
+  </style>
+</head>
+<body>
+
+<!-- ═══ LOGIN SCREEN ═══════════════════════════════════════════ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Dede<span>.</span>Admin</div>
+    <div class="login-sub">Portal Manajemen Konten</div>
+
+    <label for="loginEmail">Email</label>
+    <input type="email" id="loginEmail" placeholder="admin@example.com" autocomplete="username" />
+
+    <label for="loginPass">Password</label>
+    <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" />
+
+    <button class="login-btn" id="loginBtn">MASUK</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN APP ══════════════════════════════════════════════ -->
+<div id="adminApp">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar__logo">
+      <h1>Dede<span>.</span>Admin</h1>
+      <p>Content Management</p>
+    </div>
+    <nav class="sidebar__nav">
+      <div class="sidebar__section">Dashboard</div>
+      <div class="nav-item active" data-panel="dashboard">
+        <span class="ni">📊</span> Dashboard
+      </div>
+
+      <div class="sidebar__section">Konten Halaman</div>
+      <div class="nav-item" data-panel="hero">
+        <span class="ni">🏠</span> Hero & Sosial
+      </div>
+      <div class="nav-item" data-panel="tentang">
+        <span class="ni">👤</span> Tentang
+      </div>
+      <div class="nav-item" data-panel="skills">
+        <span class="ni">⚡</span> Skills
+      </div>
+      <div class="nav-item" data-panel="projects">
+        <span class="ni">📦</span> Proyek
+      </div>
+      <div class="nav-item" data-panel="services">
+        <span class="ni">🛠️</span> Layanan
+      </div>
+      <div class="nav-item" data-panel="blog">
+        <span class="ni">📝</span> Blog
+      </div>
+      <div class="nav-item" data-panel="messages">
+        <span class="ni">💬</span> Pesan Masuk
+        <span id="msgBadge" style="margin-left:auto;background:var(--red);color:var(--white);font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:10px;display:none"></span>
+      </div>
+
+      <div class="sidebar__section">Sistem</div>
+      <div class="nav-item" data-panel="settings">
+        <span class="ni">⚙️</span> Pengaturan
+      </div>
+    </nav>
+    <div class="sidebar__footer">
+      <div id="adminEmail" style="font-size:.75rem;color:var(--gray-500);margin-bottom:10px;"></div>
+      <button class="logout-btn" id="logoutBtn">↩ Keluar</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main-area">
+    <div class="topbar">
+      <div class="topbar__title" id="topbarTitle">Dashboard</div>
+      <div class="topbar__badge">Admin</div>
+      <div class="topbar__user" id="topbarUser"></div>
+    </div>
+
+    <div class="content">
+
+      <!-- ── DASHBOARD ── -->
+      <div class="panel active" id="panel-dashboard">
+        <div class="stats-row" id="statsRow">
+          <div class="stat-card"><div class="stat-card__val" id="stat-proj">–</div><div class="stat-card__label">Proyek</div></div>
+          <div class="stat-card"><div class="stat-card__val" id="stat-blog">–</div><div class="stat-card__label">Blog Post</div></div>
+          <div class="stat-card"><div class="stat-card__val" id="stat-svc">–</div><div class="stat-card__label">Layanan</div></div>
+          <div class="stat-card"><div class="stat-card__val" id="stat-skill">–</div><div class="stat-card__label">Skills</div></div>
+          <div class="stat-card"><div class="stat-card__val" id="stat-msg">–</div><div class="stat-card__label">Pesan Masuk</div></div>
+        </div>
+        <div class="table-card" style="padding:24px;">
+          <h3 style="font-family:var(--font-head);font-size:1.2rem;margin-bottom:12px;">Selamat Datang, Admin 👋</h3>
+          <p style="color:var(--gray-500);font-size:.9rem;line-height:1.6;">
+            Gunakan menu di sebelah kiri untuk mengelola semua konten website Dede Separman.
+            Perubahan akan langsung tersimpan ke Supabase dan tampil di website publik.
+          </p>
+          <div style="margin-top:18px;padding:14px 16px;background:rgba(230,57,70,.06);border-radius:var(--radius);border-left:3px solid var(--red);">
+            <strong style="font-size:.85rem;">💡 Tips:</strong>
+            <span style="font-size:.85rem;color:var(--gray-700);"> Konten Hero & Tentang tersimpan di tabel <code>site_config</code>. Pastikan sudah menjalankan schema SQL terbaru di Supabase.</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── HERO & SOSIAL ── -->
+      <div class="panel" id="panel-hero">
+        <div class="section-header">
+          <h2>Hero & <span>Sosial</span></h2>
+          <button class="btn btn-primary" id="saveHeroBtn">💾 Simpan Perubahan</button>
+        </div>
+
+        <div class="hero-preview" id="heroPreview">
+          <div style="font-size:.8rem;color:var(--red);margin-bottom:6px;">— Halo</div>
+          <h1>Saya <span id="prevName">Dede Separman</span></h1>
+          <p id="prevDesc">Terbiasa dengan Google Apps Script, AppSheet dan Excel...</p>
+        </div>
+
+        <div class="table-card" style="padding:24px;">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Nama Lengkap</label>
+              <input type="text" id="heroName" placeholder="Dede Separman" />
+            </div>
+            <div class="form-group">
+              <label>Tagline / Jabatan</label>
+              <input type="text" id="heroTagline" placeholder="Google Apps Script & Automation Specialist" />
+            </div>
+          </div>
+          <div class="form-group form-row full">
+            <div class="form-group">
+              <label>Deskripsi Hero</label>
+              <textarea id="heroDesc" placeholder="Terbiasa dengan Google Apps Script..."></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Teks Tombol CTA</label>
+              <input type="text" id="heroCtaText" placeholder="Lihat Portofolio" />
+            </div>
+            <div class="form-group">
+              <label>Link Tombol CTA</label>
+              <input type="text" id="heroCtaLink" placeholder="pages/proyek.html" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>URL Foto Profil</label>
+            <input type="text" id="heroPhoto" placeholder="assets/photo.png atau https://..." />
+            <div class="hint">Masukkan URL gambar langsung atau path relatif ke file foto.</div>
+          </div>
+        </div>
+
+        <!-- Social Links -->
+        <div class="section-header" style="margin-top:24px;">
+          <h2>Link <span>Sosial</span></h2>
+          <button class="btn btn-primary" id="addSocialBtn">+ Tambah Link</button>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Icon/Emoji</th><th>Label</th><th>URL</th><th>Aksi</th></tr></thead>
+            <tbody id="socialTableBody">
+              <tr><td colspan="4"><div class="loading-rows"><div class="loading-row"></div><div class="loading-row"></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── TENTANG ── -->
+      <div class="panel" id="panel-tentang">
+        <div class="section-header">
+          <h2>Halaman <span>Tentang</span></h2>
+          <button class="btn btn-primary" id="saveTentangBtn">💾 Simpan</button>
+        </div>
+        <div class="table-card" style="padding:24px;">
+          <div class="form-group">
+            <label>Judul Halaman</label>
+            <input type="text" id="tentangTitle" placeholder="Tentang Saya" />
+          </div>
+          <div class="form-group">
+            <label>Bio Paragraf 1</label>
+            <textarea id="tentangBio1" placeholder="Saya adalah..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Bio Paragraf 2</label>
+            <textarea id="tentangBio2" placeholder="Selain itu..."></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Lokasi</label>
+              <input type="text" id="tentangLokasi" placeholder="Bandung, West Java" />
+            </div>
+            <div class="form-group">
+              <label>Email Kontak</label>
+              <input type="email" id="tentangEmail" placeholder="hello@example.com" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Tahun Mulai Karir</label>
+              <input type="number" id="tentangYear" placeholder="2019" />
+            </div>
+            <div class="form-group">
+              <label>Total Proyek (untuk counter)</label>
+              <input type="number" id="tentangProjects" placeholder="50" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>URL CV / Resume (untuk tombol download)</label>
+            <input type="text" id="tentangCv" placeholder="https://drive.google.com/..." />
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SKILLS ── -->
+      <div class="panel" id="panel-skills">
+        <div class="section-header">
+          <h2>Manajemen <span>Skills</span></h2>
+          <button class="btn btn-primary" id="addSkillBtn">+ Tambah Skill</button>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Icon</th><th>Nama</th><th>Kategori</th><th>Level</th><th>Urutan</th><th>Aksi</th></tr></thead>
+            <tbody id="skillsTableBody">
+              <tr><td colspan="6"><div class="loading-rows"><div class="loading-row"></div><div class="loading-row"></div><div class="loading-row"></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── PROYEK ── -->
+      <div class="panel" id="panel-projects">
+        <div class="section-header">
+          <h2>Manajemen <span>Proyek</span></h2>
+          <button class="btn btn-primary" id="addProjectBtn">+ Tambah Proyek</button>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Icon</th><th>Judul</th><th>Tag</th><th>URL</th><th>Urutan</th><th>Aksi</th></tr></thead>
+            <tbody id="projectsTableBody">
+              <tr><td colspan="6"><div class="loading-rows"><div class="loading-row"></div><div class="loading-row"></div><div class="loading-row"></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── LAYANAN ── -->
+      <div class="panel" id="panel-services">
+        <div class="section-header">
+          <h2>Manajemen <span>Layanan</span></h2>
+          <button class="btn btn-primary" id="addServiceBtn">+ Tambah Layanan</button>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Icon</th><th>Judul</th><th>Harga</th><th>Fitur</th><th>Urutan</th><th>Aksi</th></tr></thead>
+            <tbody id="servicesTableBody">
+              <tr><td colspan="6"><div class="loading-rows"><div class="loading-row"></div><div class="loading-row"></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── BLOG ── -->
+      <div class="panel" id="panel-blog">
+        <div class="section-header">
+          <h2>Manajemen <span>Blog</span></h2>
+          <button class="btn btn-primary" id="addPostBtn">+ Buat Post Baru</button>
+        </div>
+        <div class="table-card">
+          <table>
+            <thead><tr><th>Emoji</th><th>Judul</th><th>Slug</th><th>Status</th><th>Baca</th><th>Aksi</th></tr></thead>
+            <tbody id="blogTableBody">
+              <tr><td colspan="6"><div class="loading-rows"><div class="loading-row"></div><div class="loading-row"></div></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ── MESSAGES ── -->
+      <div class="panel" id="panel-messages">
+        <div class="section-header">
+          <h2>Pesan <span>Masuk</span></h2>
+          <button class="btn btn-secondary" id="markAllReadBtn">✓ Tandai Semua Dibaca</button>
+        </div>
+        <div id="messagesContainer">
+          <div class="loading-rows"><div class="loading-row"></div><div class="loading-row"></div><div class="loading-row"></div></div>
+        </div>
+      </div>
+
+      <!-- ── SETTINGS ── -->
+      <div class="panel" id="panel-settings">
+        <div class="section-header">
+          <h2>Pengaturan <span>Sistem</span></h2>
+        </div>
+        <div class="settings-grid">
+          <div class="settings-card">
+            <h3>🔑 Ganti Password Admin</h3>
+            <div class="form-group">
+              <label>Email Admin</label>
+              <input type="email" id="newAdminEmail" placeholder="admin@example.com" />
+            </div>
+            <div class="form-group">
+              <label>Password Baru</label>
+              <input type="password" id="newAdminPass" placeholder="Min. 8 karakter" />
+            </div>
+            <div class="form-group">
+              <label>Konfirmasi Password</label>
+              <input type="password" id="confirmAdminPass" placeholder="Ulangi password" />
+            </div>
+            <button class="btn btn-primary" id="saveAdminBtn">Simpan Akun Admin</button>
+          </div>
+
+          <div class="settings-card">
+            <h3>🗄️ Koneksi Supabase</h3>
+            <div class="form-group">
+              <label>Supabase URL</label>
+              <input type="text" id="cfgUrl" placeholder="https://xxx.supabase.co" />
+            </div>
+            <div class="form-group">
+              <label>Anon Public Key</label>
+              <input type="text" id="cfgKey" placeholder="eyJhb..." />
+              <div class="hint">Aman disimpan di client. RLS melindungi data sensitif.</div>
+            </div>
+            <button class="btn btn-primary" id="saveCfgBtn">Simpan & Reconnect</button>
+          </div>
+
+          <div class="settings-card">
+            <h3>🎨 Warna & Branding</h3>
+            <div class="form-group">
+              <label>Warna Aksen (Merah)</label>
+              <input type="color" id="colorAccent" value="#E63946" style="height:42px;padding:4px;" />
+            </div>
+            <div class="form-group">
+              <label>Nama Brand / Logo</label>
+              <input type="text" id="brandName" placeholder="Dede Separman" />
+            </div>
+            <button class="btn btn-primary" id="saveBrandBtn">Simpan Branding</button>
+          </div>
+
+          <div class="settings-card">
+            <h3>📋 SQL Schema Terbaru</h3>
+            <p style="font-size:.85rem;color:var(--gray-500);margin-bottom:14px;line-height:1.6;">
+              Jalankan SQL ini di Supabase SQL Editor untuk menambahkan tabel <code>site_config</code> dan <code>socials</code>.
+            </p>
+            <textarea readonly style="width:100%;height:150px;font-size:.72rem;font-family:monospace;background:var(--gray-50);border:1px solid var(--gray-100);border-radius:8px;padding:10px;resize:none;color:var(--gray-700);" id="schemaBox"></textarea>
+            <button class="btn btn-secondary" style="margin-top:10px;" onclick="copySchema()">📋 Copy SQL</button>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main-area -->
+</div><!-- /adminApp -->
+
+<!-- ═══ TOAST ══════════════════════════════════════════════════ -->
+<div id="toast"></div>
+
+<!-- ═══ CONFIRM DIALOG ════════════════════════════════════════ -->
+<div class="confirm-overlay hidden" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="emoji">🗑️</div>
+    <h3 id="confirmTitle">Hapus item ini?</h3>
+    <p id="confirmDesc">Tindakan ini tidak bisa dibatalkan.</p>
+    <div class="btns">
+      <button class="btn btn-secondary" id="confirmNo">Batal</button>
+      <button class="btn" style="background:var(--danger);color:var(--white);" id="confirmYes">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ GENERIC MODAL ════════════════════════════════════════ -->
+<div class="modal-backdrop hidden" id="modalBackdrop">
+  <div class="modal" id="modalBox">
+    <div class="modal__head">
+      <h3 id="modalTitle">Form</h3>
+      <button class="modal__close" id="modalClose">✕</button>
+    </div>
+    <div class="modal__body" id="modalBody"></div>
+    <div class="modal__foot">
+      <button class="btn btn-secondary" id="modalCancel">Batal</button>
+      <button class="btn btn-primary" id="modalSave">Simpan</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════
+   CONFIG — ganti dengan Supabase URL & Key Anda
+═══════════════════════════════════════════════════════════════ */
+let SUPABASE_URL  = localStorage.getItem('sb_url')  || 'https://YOUR_PROJECT_ID.supabase.co';
+let SUPABASE_ANON = localStorage.getItem('sb_key')  || 'YOUR_ANON_PUBLIC_KEY';
+
+/* ─── Supabase REST helper ─── */
+async function sb(table, method = 'GET', body = null, query = '') {
+  const headers = {
+    'apikey': SUPABASE_ANON,
+    'Authorization': `Bearer ${(currentSession || SUPABASE_ANON)}`,
+    'Content-Type': 'application/json',
+    'Prefer': method === 'POST' ? 'return=representation' : 'return=representation'
+  };
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}${query}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : null
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || res.statusText);
+  }
+  return res.status === 204 ? null : res.json();
+}
+
+/* Auth via Supabase Auth REST */
+async function signIn(email, password) {
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_ANON,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error_description || data.msg || 'Login gagal');
+  return data;
+}
+
+let currentSession = null;
+let currentUser    = null;
+
+/* ─── Toast ─── */
+function toast(msg, type = 'default') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `show ${type}`;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.className = '', 3000);
+}
+
+/* ─── Confirm dialog ─── */
+function confirm(title, desc) {
+  return new Promise(resolve => {
+    document.getElementById('confirmTitle').textContent = title;
+    document.getElementById('confirmDesc').textContent = desc;
+    document.getElementById('confirmOverlay').classList.remove('hidden');
+    const yes = document.getElementById('confirmYes');
+    const no  = document.getElementById('confirmNo');
+    const clean = () => document.getElementById('confirmOverlay').classList.add('hidden');
+    yes.onclick = () => { clean(); resolve(true); };
+    no.onclick  = () => { clean(); resolve(false); };
+  });
+}
+
+/* ─── Modal ─── */
+let modalSaveFn = null;
+function openModal(title, bodyHtml, saveFn) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = bodyHtml;
+  document.getElementById('modalBackdrop').classList.remove('hidden');
+  modalSaveFn = saveFn;
+}
+function closeModal() {
+  document.getElementById('modalBackdrop').classList.add('hidden');
+  modalSaveFn = null;
+}
+document.getElementById('modalClose').onclick  = closeModal;
+document.getElementById('modalCancel').onclick = closeModal;
+document.getElementById('modalSave').onclick   = () => { if (modalSaveFn) modalSaveFn(); };
+document.getElementById('modalBackdrop').onclick = e => { if (e.target === document.getElementById('modalBackdrop')) closeModal(); };
+
+/* ─── Navigation ─── */
+function activatePanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`panel-${name}`).classList.add('active');
+  document.querySelector(`.nav-item[data-panel="${name}"]`).classList.add('active');
+  const titles = {
+    dashboard: 'Dashboard', hero: 'Hero & Sosial', tentang: 'Tentang',
+    skills: 'Skills', projects: 'Proyek', services: 'Layanan',
+    blog: 'Blog', messages: 'Pesan Masuk', settings: 'Pengaturan'
+  };
+  document.getElementById('topbarTitle').textContent = titles[name] || name;
+
+  const loaders = {
+    skills: loadSkills, projects: loadProjects,
+    services: loadServices, blog: loadBlog,
+    messages: loadMessages, hero: loadHero,
+    tentang: loadTentang, dashboard: loadDashboard
+  };
+  if (loaders[name]) loaders[name]();
+}
+
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.onclick = () => activatePanel(item.dataset.panel);
+});
+
+/* ═══════════════════════════════════════════════════════════════
+   LOGIN
+═══════════════════════════════════════════════════════════════ */
+document.getElementById('loginBtn').onclick = async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass  = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  errEl.classList.remove('show');
+  document.getElementById('loginBtn').textContent = 'Memuat...';
+  try {
+    const data = await signIn(email, pass);
+    currentSession = data.access_token;
+    currentUser    = data.user;
+    document.getElementById('adminEmail').textContent = email;
+    document.getElementById('topbarUser').textContent = email;
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('adminApp').classList.add('visible');
+    loadDashboard();
+  } catch (e) {
+    errEl.textContent = e.message;
+    errEl.classList.add('show');
+    document.getElementById('loginBtn').textContent = 'MASUK';
+  }
+};
+document.getElementById('loginPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('loginBtn').click();
+});
+
+/* ─── Logout ─── */
+document.getElementById('logoutBtn').onclick = () => {
+  currentSession = null; currentUser = null;
+  document.getElementById('adminApp').classList.remove('visible');
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.getElementById('loginBtn').textContent = 'MASUK';
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginPass').value = '';
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   DASHBOARD STATS
+═══════════════════════════════════════════════════════════════ */
+async function loadDashboard() {
+  try {
+    const [proj, blog, svc, skill, msg] = await Promise.all([
+      sb('projects', 'GET', null, '?select=id'),
+      sb('posts',    'GET', null, '?select=id'),
+      sb('services', 'GET', null, '?select=id'),
+      sb('skills',   'GET', null, '?select=id'),
+      sb('messages', 'GET', null, '?select=id,read', `?select=id,read`)
+    ]).catch(() => [[],[],[],[],[]]);
+    document.getElementById('stat-proj').textContent  = (proj||[]).length;
+    document.getElementById('stat-blog').textContent  = (blog||[]).length;
+    document.getElementById('stat-svc').textContent   = (svc||[]).length;
+    document.getElementById('stat-skill').textContent = (skill||[]).length;
+    document.getElementById('stat-msg').textContent   = (msg||[]).length;
+    const unread = (msg||[]).filter(m => !m.read).length;
+    const badge  = document.getElementById('msgBadge');
+    if (unread > 0) { badge.textContent = unread; badge.style.display = 'inline'; }
+    else badge.style.display = 'none';
+  } catch(e) { /* stats optional */ }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SKILLS
+═══════════════════════════════════════════════════════════════ */
+async function loadSkills() {
+  const tbody = document.getElementById('skillsTableBody');
+  tbody.innerHTML = '<tr><td colspan="6"><div class="loading-rows"><div class="loading-row"></div><div class="loading-row"></div><div class="loading-row"></div></div></td></tr>';
+  try {
+    const rows = await sb('skills', 'GET', null, '?order=sort_order.asc');
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="emoji">⚡</div><p>Belum ada skill.</p></div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td class="emoji-cell">${r.icon || '–'}</td>
+        <td><strong>${r.name}</strong></td>
+        <td><span class="tag-pill">${r.category || '–'}</span></td>
+        <td>
+          <div class="level-bar">
+            <div class="level-bar__track"><div class="level-bar__fill" style="width:${r.level}%"></div></div>
+            <span style="font-size:.8rem;color:var(--gray-500)">${r.level}%</span>
+          </div>
+        </td>
+        <td>${r.sort_order}</td>
+        <td><div class="actions">
+          <button class="btn-sm btn-edit" onclick="editSkill(${JSON.stringify(r).replace(/"/g,'&quot;')})">✏️ Edit</button>
+          <button class="btn-sm btn-del" onclick="deleteSkill('${r.id}')">🗑️</button>
+        </div></td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);padding:16px;">${e.message}</td></tr>`; }
+}
+
+function skillForm(r = {}) {
+  return `
+    <div class="form-row">
+      <div class="form-group"><label>Nama Skill</label><input id="fName" value="${r.name||''}" placeholder="Google Apps Script" /></div>
+      <div class="form-group"><label>Kategori</label><input id="fCat" value="${r.category||''}" placeholder="Google Workspace" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Icon / Emoji</label><input id="fIcon" value="${r.icon||''}" placeholder="⚡" /></div>
+      <div class="form-group"><label>Level (0-100)</label><input id="fLevel" type="number" min="0" max="100" value="${r.level||80}" /></div>
+    </div>
+    <div class="form-group"><label>Urutan (sort_order)</label><input id="fSort" type="number" value="${r.sort_order||0}" /></div>`;
+}
+
+document.getElementById('addSkillBtn').onclick = () => openModal('Tambah Skill', skillForm(), async () => {
+  const data = { name: v('fName'), category: v('fCat'), icon: v('fIcon'), level: parseInt(v('fLevel')), sort_order: parseInt(v('fSort')) };
+  try { await sb('skills', 'POST', data); toast('Skill ditambahkan!', 'success'); closeModal(); loadSkills(); } catch(e) { toast(e.message, 'error'); }
+});
+
+function editSkill(r) {
+  openModal('Edit Skill', skillForm(r), async () => {
+    const data = { name: v('fName'), category: v('fCat'), icon: v('fIcon'), level: parseInt(v('fLevel')), sort_order: parseInt(v('fSort')) };
+    try { await sb(`skills?id=eq.${r.id}`, 'PATCH', data); toast('Skill diperbarui!', 'success'); closeModal(); loadSkills(); } catch(e) { toast(e.message, 'error'); }
+  });
+}
+
+async function deleteSkill(id) {
+  if (!await confirm('Hapus skill ini?', 'Tindakan ini tidak bisa dibatalkan.')) return;
+  try { await sb(`skills?id=eq.${id}`, 'DELETE'); toast('Skill dihapus.'); loadSkills(); } catch(e) { toast(e.message, 'error'); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PROJECTS
+═══════════════════════════════════════════════════════════════ */
+async function loadProjects() {
+  const tbody = document.getElementById('projectsTableBody');
+  tbody.innerHTML = '<tr><td colspan="6"><div class="loading-rows"><div class="loading-row"></div><div class="loading-row"></div><div class="loading-row"></div></div></td></tr>';
+  try {
+    const rows = await sb('projects', 'GET', null, '?order=sort_order.asc');
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="emoji">📦</div><p>Belum ada proyek.</p></div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td class="emoji-cell">${r.emoji || '📋'}</td>
+        <td><strong>${r.title}</strong><br><span style="font-size:.78rem;color:var(--gray-500)">${(r.summary||'').slice(0,50)}${(r.summary||'').length>50?'…':''}</span></td>
+        <td><span class="tag-pill">${r.tag||'–'}</span></td>
+        <td><a href="${r.url||'#'}" target="_blank" style="color:var(--red);font-size:.8rem;">${r.url ? '🔗 Buka' : '–'}</a></td>
+        <td>${r.sort_order}</td>
+        <td><div class="actions">
+          <button class="btn-sm btn-edit" onclick="editProject(${JSON.stringify(r).replace(/"/g,'&quot;')})">✏️ Edit</button>
+          <button class="btn-sm btn-del" onclick="deleteProject('${r.id}')">🗑️</button>
+        </div></td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);padding:16px;">${e.message}</td></tr>`; }
+}
+
+function projectForm(r = {}) {
+  return `
+    <div class="form-row">
+      <div class="form-group"><label>Judul Proyek</label><input id="fTitle" value="${r.title||''}" placeholder="Sistem Absensi Otomatis" /></div>
+      <div class="form-group"><label>Tag / Kategori</label><input id="fTag" value="${r.tag||''}" placeholder="Google Apps Script" /></div>
+    </div>
+    <div class="form-group"><label>Ringkasan (Summary)</label><input id="fSummary" value="${r.summary||''}" placeholder="Deskripsi singkat..." /></div>
+    <div class="form-group"><label>Deskripsi Lengkap</label><textarea id="fDesc">${r.description||''}</textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Emoji Icon</label><input id="fEmoji" value="${r.emoji||''}" placeholder="📋" /></div>
+      <div class="form-group"><label>Urutan</label><input id="fSort" type="number" value="${r.sort_order||0}" /></div>
+    </div>
+    <div class="form-group"><label>URL Gambar Cover</label><input id="fImg" value="${r.image_url||''}" placeholder="https://..." /></div>
+    <div class="form-group"><label>URL Demo / Repo</label><input id="fUrl" value="${r.url||''}" placeholder="https://..." /></div>`;
+}
+
+document.getElementById('addProjectBtn').onclick = () => openModal('Tambah Proyek', projectForm(), async () => {
+  const data = { title: v('fTitle'), tag: v('fTag'), summary: v('fSummary'), description: v('fDesc'), emoji: v('fEmoji'), sort_order: parseInt(v('fSort')||0), image_url: v('fImg'), url: v('fUrl') };
+  try { await sb('projects', 'POST', data); toast('Proyek ditambahkan!', 'success'); closeModal(); loadProjects(); } catch(e) { toast(e.message, 'error'); }
+});
+
+function editProject(r) {
+  openModal('Edit Proyek', projectForm(r), async () => {
+    const data = { title: v('fTitle'), tag: v('fTag'), summary: v('fSummary'), description: v('fDesc'), emoji: v('fEmoji'), sort_order: parseInt(v('fSort')||0), image_url: v('fImg'), url: v('fUrl') };
+    try { await sb(`projects?id=eq.${r.id}`, 'PATCH', data); toast('Proyek diperbarui!', 'success'); closeModal(); loadProjects(); } catch(e) { toast(e.message, 'error'); }
+  });
+}
+
+async function deleteProject(id) {
+  if (!await confirm('Hapus proyek ini?', 'Data proyek akan dihapus permanen.')) return;
+  try { await sb(`projects?id=eq.${id}`, 'DELETE'); toast('Proyek dihapus.'); loadProjects(); } catch(e) { toast(e.message, 'error'); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SERVICES
+═══════════════════════════════════════════════════════════════ */
+async function loadServices() {
+  const tbody = document.getElementById('servicesTableBody');
+  tbody.innerHTML = '<tr><td colspan="6"><div class="loading-rows"><div class="loading-row"></div><div class="loading-row"></div></div></td></tr>';
+  try {
+    const rows = await sb('services', 'GET', null, '?order=sort_order.asc');
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="emoji">🛠️</div><p>Belum ada layanan.</p></div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td class="emoji-cell">${r.icon||'🛠️'}</td>
+        <td><strong>${r.title}</strong><br><span style="font-size:.78rem;color:var(--gray-500)">${(r.description||'').slice(0,50)}${(r.description||'').length>50?'…':''}</span></td>
+        <td style="font-weight:600;color:var(--red)">${r.price_label||'–'}</td>
+        <td style="font-size:.8rem;">${(r.features||[]).slice(0,2).join(', ')}${(r.features||[]).length>2?'…':''}</td>
+        <td>${r.sort_order}</td>
+        <td><div class="actions">
+          <button class="btn-sm btn-edit" onclick="editService(${JSON.stringify(r).replace(/"/g,'&quot;')})">✏️ Edit</button>
+          <button class="btn-sm btn-del" onclick="deleteService('${r.id}')">🗑️</button>
+        </div></td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);padding:16px;">${e.message}</td></tr>`; }
+}
+
+function serviceForm(r = {}) {
+  const feat = (r.features||[]).join('\n');
+  return `
+    <div class="form-row">
+      <div class="form-group"><label>Judul Layanan</label><input id="fTitle" value="${r.title||''}" placeholder="Google Apps Script" /></div>
+      <div class="form-group"><label>Icon / Emoji</label><input id="fIcon" value="${r.icon||''}" placeholder="⚡" /></div>
+    </div>
+    <div class="form-group"><label>Deskripsi</label><textarea id="fDesc">${r.description||''}</textarea></div>
+    <div class="form-row">
+      <div class="form-group"><label>Label Harga</label><input id="fPrice" value="${r.price_label||''}" placeholder="Mulai Rp 300rb" /></div>
+      <div class="form-group"><label>Urutan</label><input id="fSort" type="number" value="${r.sort_order||0}" /></div>
+    </div>
+    <div class="form-group">
+      <label>Fitur-Fitur (satu per baris)</label>
+      <textarea id="fFeatures" style="min-height:100px;">${feat}</textarea>
+      <div class="hint">Pisahkan setiap fitur dengan enter baru.</div>
+    </div>`;
+}
+
+document.getElementById('addServiceBtn').onclick = () => openModal('Tambah Layanan', serviceForm(), async () => {
+  const features = v('fFeatures').split('\n').map(s=>s.trim()).filter(Boolean);
+  const data = { title: v('fTitle'), icon: v('fIcon'), description: v('fDesc'), price_label: v('fPrice'), sort_order: parseInt(v('fSort')||0), features };
+  try { await sb('services', 'POST', data); toast('Layanan ditambahkan!', 'success'); closeModal(); loadServices(); } catch(e) { toast(e.message, 'error'); }
+});
+
+function editService(r) {
+  openModal('Edit Layanan', serviceForm(r), async () => {
+    const features = v('fFeatures').split('\n').map(s=>s.trim()).filter(Boolean);
+    const data = { title: v('fTitle'), icon: v('fIcon'), description: v('fDesc'), price_label: v('fPrice'), sort_order: parseInt(v('fSort')||0), features };
+    try { await sb(`services?id=eq.${r.id}`, 'PATCH', data); toast('Layanan diperbarui!', 'success'); closeModal(); loadServices(); } catch(e) { toast(e.message, 'error'); }
+  });
+}
+
+async function deleteService(id) {
+  if (!await confirm('Hapus layanan ini?', 'Data layanan akan dihapus permanen.')) return;
+  try { await sb(`services?id=eq.${id}`, 'DELETE'); toast('Layanan dihapus.'); loadServices(); } catch(e) { toast(e.message, 'error'); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BLOG
+═══════════════════════════════════════════════════════════════ */
+async function loadBlog() {
+  const tbody = document.getElementById('blogTableBody');
+  tbody.innerHTML = '<tr><td colspan="6"><div class="loading-rows"><div class="loading-row"></div><div class="loading-row"></div></div></td></tr>';
+  try {
+    const rows = await sb('posts', 'GET', null, '?order=created_at.desc');
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="emoji">📝</div><p>Belum ada post.</p></div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td class="emoji-cell">${r.cover_emoji||'📝'}</td>
+        <td><strong>${r.title}</strong><br><span style="font-size:.78rem;color:var(--gray-500)">${(r.excerpt||'').slice(0,60)}…</span></td>
+        <td style="font-size:.8rem;color:var(--gray-500)">${r.slug}</td>
+        <td>
+          <span class="status-dot ${r.published?'published':'draft'}"></span>
+          <span style="font-size:.82rem">${r.published?'Publik':'Draft'}</span>
+        </td>
+        <td>${r.read_time} menit</td>
+        <td><div class="actions">
+          <button class="btn-sm btn-edit" onclick="editPost(${JSON.stringify(r).replace(/"/g,'&quot;')})">✏️ Edit</button>
+          <button class="btn-sm btn-del" onclick="deletePost('${r.id}')">🗑️</button>
+        </div></td>
+      </tr>`).join('');
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);padding:16px;">${e.message}</td></tr>`; }
+}
+
+function postForm(r = {}) {
+  return `
+    <div class="form-group"><label>Judul Post</label><input id="fTitle" value="${r.title||''}" placeholder="Cara Otomatisasi Absensi..." /></div>
+    <div class="form-row">
+      <div class="form-group"><label>Slug (URL)</label><input id="fSlug" value="${r.slug||''}" placeholder="cara-otomatisasi-absensi" /></div>
+      <div class="form-group"><label>Waktu Baca (menit)</label><input id="fRead" type="number" value="${r.read_time||5}" /></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Emoji Cover</label><input id="fEmoji" value="${r.cover_emoji||''}" placeholder="📋" /></div>
+      <div class="form-group"><label>Warna Background Cover</label><input id="fColor" type="color" value="${r.cover_color||'#F7F8FA'}" style="height:42px;padding:4px;" /></div>
+    </div>
+    <div class="form-group"><label>Excerpt / Ringkasan</label><textarea id="fExcerpt">${r.excerpt||''}</textarea></div>
+    <div class="form-group"><label>Konten (HTML)</label><textarea id="fContent" style="min-height:140px;">${r.content||''}</textarea></div>
+    <div class="toggle-row">
+      <button type="button" class="toggle ${r.published?'on':''}" id="fPublished" onclick="this.classList.toggle('on')"></button>
+      <span style="font-size:.88rem;">Publikasi (tampil di website)</span>
+    </div>`;
+}
+
+document.getElementById('addPostBtn').onclick = () => openModal('Buat Post Baru', postForm(), async () => {
+  const published = document.getElementById('fPublished').classList.contains('on');
+  const data = { title: v('fTitle'), slug: v('fSlug'), read_time: parseInt(v('fRead')||5), cover_emoji: v('fEmoji'), cover_color: v('fColor'), excerpt: v('fExcerpt'), content: v('fContent'), published, published_at: published ? new Date().toISOString() : null };
+  try { await sb('posts', 'POST', data); toast('Post ditambahkan!', 'success'); closeModal(); loadBlog(); } catch(e) { toast(e.message, 'error'); }
+});
+
+function editPost(r) {
+  openModal('Edit Post', postForm(r), async () => {
+    const published = document.getElementById('fPublished').classList.contains('on');
+    const data = { title: v('fTitle'), slug: v('fSlug'), read_time: parseInt(v('fRead')||5), cover_emoji: v('fEmoji'), cover_color: v('fColor'), excerpt: v('fExcerpt'), content: v('fContent'), published, published_at: published ? (r.published_at || new Date().toISOString()) : null };
+    try { await sb(`posts?id=eq.${r.id}`, 'PATCH', data); toast('Post diperbarui!', 'success'); closeModal(); loadBlog(); } catch(e) { toast(e.message, 'error'); }
+  });
+}
+
+async function deletePost(id) {
+  if (!await confirm('Hapus post ini?', 'Post akan dihapus permanen dari database.')) return;
+  try { await sb(`posts?id=eq.${id}`, 'DELETE'); toast('Post dihapus.'); loadBlog(); } catch(e) { toast(e.message, 'error'); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MESSAGES
+═══════════════════════════════════════════════════════════════ */
+async function loadMessages() {
+  const container = document.getElementById('messagesContainer');
+  container.innerHTML = '<div class="loading-rows"><div class="loading-row"></div><div class="loading-row"></div><div class="loading-row"></div></div>';
+  try {
+    const rows = await sb('messages', 'GET', null, '?order=created_at.desc');
+    if (!rows.length) { container.innerHTML = '<div class="empty-state"><div class="emoji">💬</div><p>Belum ada pesan masuk.</p></div>'; return; }
+    const unread = rows.filter(r => !r.read).length;
+    const badge = document.getElementById('msgBadge');
+    badge.textContent = unread;
+    badge.style.display = unread ? 'inline' : 'none';
+
+    container.innerHTML = rows.map(r => `
+      <div class="message-card ${r.read?'':'unread'}" id="msg-${r.id}">
+        <div class="message-card__meta">
+          <span class="message-card__name">${r.name}</span>
+          ${!r.read ? '<span class="unread-badge">Baru</span>' : ''}
+          <span class="message-card__email">📧 ${r.email}</span>
+          <span class="message-card__date">${new Date(r.created_at).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</span>
+        </div>
+        ${r.subject ? `<div class="message-card__subject">📌 ${r.subject}</div>` : ''}
+        <div class="message-card__body">${r.message}</div>
+        <div style="margin-top:12px;display:flex;gap:8px;">
+          ${!r.read ? `<button class="btn-sm btn-view" onclick="markRead('${r.id}')">✓ Tandai Dibaca</button>` : ''}
+          <button class="btn-sm btn-del" onclick="deleteMessage('${r.id}')">🗑️ Hapus</button>
+          <a href="mailto:${r.email}?subject=Re: ${r.subject||'Pesan Anda'}" class="btn-sm btn-edit" style="text-decoration:none;">✉️ Balas</a>
+        </div>
+      </div>`).join('');
+  } catch(e) { container.innerHTML = `<div style="color:var(--danger);padding:20px;">${e.message}</div>`; }
+}
+
+async function markRead(id) {
+  try { await sb(`messages?id=eq.${id}`, 'PATCH', { read: true }); loadMessages(); } catch(e) { toast(e.message, 'error'); }
+}
+
+document.getElementById('markAllReadBtn').onclick = async () => {
+  try { await sb('messages?read=eq.false', 'PATCH', { read: true }); toast('Semua pesan ditandai dibaca.', 'success'); loadMessages(); } catch(e) { toast(e.message, 'error'); }
+};
+
+async function deleteMessage(id) {
+  if (!await confirm('Hapus pesan ini?', 'Pesan akan dihapus permanen.')) return;
+  try { await sb(`messages?id=eq.${id}`, 'DELETE'); toast('Pesan dihapus.'); loadMessages(); } catch(e) { toast(e.message, 'error'); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HERO & TENTANG (site_config table)
+═══════════════════════════════════════════════════════════════ */
+async function loadHero() {
+  try {
+    const rows = await sb('site_config', 'GET', null, '?select=key,value');
+    const cfg = Object.fromEntries(rows.map(r => [r.key, r.value]));
+    setVal('heroName',     cfg.hero_name    || 'Dede Separman');
+    setVal('heroTagline',  cfg.hero_tagline || '');
+    setVal('heroDesc',     cfg.hero_desc    || '');
+    setVal('heroCtaText',  cfg.hero_cta_text|| 'Lihat Portofolio');
+    setVal('heroCtaLink',  cfg.hero_cta_link|| 'pages/proyek.html');
+    setVal('heroPhoto',    cfg.hero_photo   || 'assets/photo.png');
+    updateHeroPreview();
+    loadSocials();
+  } catch(e) { toast('Gagal load hero config: ' + e.message, 'error'); }
+}
+
+function updateHeroPreview() {
+  document.getElementById('prevName').textContent = document.getElementById('heroName').value || 'Dede Separman';
+  document.getElementById('prevDesc').textContent = document.getElementById('heroDesc').value || '...';
+}
+['heroName','heroDesc'].forEach(id => document.getElementById(id).addEventListener('input', updateHeroPreview));
+
+document.getElementById('saveHeroBtn').onclick = async () => {
+  const pairs = [
+    ['hero_name', v('heroName')], ['hero_tagline', v('heroTagline')],
+    ['hero_desc', v('heroDesc')], ['hero_cta_text', v('heroCtaText')],
+    ['hero_cta_link', v('heroCtaLink')], ['hero_photo', v('heroPhoto')]
+  ];
+  try {
+    await Promise.all(pairs.map(([key, value]) =>
+      sb('site_config', 'POST', { key, value }, '')
+        .catch(() => sb(`site_config?key=eq.${key}`, 'PATCH', { value }))
+    ));
+    toast('Hero tersimpan!', 'success');
+  } catch(e) { toast(e.message, 'error'); }
+};
+
+async function loadTentang() {
+  try {
+    const rows = await sb('site_config', 'GET', null, '?select=key,value');
+    const cfg = Object.fromEntries(rows.map(r => [r.key, r.value]));
+    setVal('tentangTitle',    cfg.tentang_title    || 'Tentang Saya');
+    setVal('tentangBio1',     cfg.tentang_bio1     || '');
+    setVal('tentangBio2',     cfg.tentang_bio2     || '');
+    setVal('tentangLokasi',   cfg.tentang_lokasi   || 'Bandung, West Java');
+    setVal('tentangEmail',    cfg.tentang_email    || '');
+    setVal('tentangYear',     cfg.tentang_year     || '2019');
+    setVal('tentangProjects', cfg.tentang_projects || '50');
+    setVal('tentangCv',       cfg.tentang_cv       || '');
+  } catch(e) { toast('Gagal load tentang config', 'error'); }
+}
+
+document.getElementById('saveTentangBtn').onclick = async () => {
+  const pairs = [
+    ['tentang_title', v('tentangTitle')], ['tentang_bio1', v('tentangBio1')],
+    ['tentang_bio2', v('tentangBio2')], ['tentang_lokasi', v('tentangLokasi')],
+    ['tentang_email', v('tentangEmail')], ['tentang_year', v('tentangYear')],
+    ['tentang_projects', v('tentangProjects')], ['tentang_cv', v('tentangCv')]
+  ];
+  try {
+    await Promise.all(pairs.map(([key, value]) =>
+      sb('site_config', 'POST', { key, value }, '')
+        .catch(() => sb(`site_config?key=eq.${key}`, 'PATCH', { value }))
+    ));
+    toast('Halaman Tentang tersimpan!', 'success');
+  } catch(e) { toast(e.message, 'error'); }
+};
+
+/* ═══════════════════════════════════════════════════════════════
+   SOCIALS
+═══════════════════════════════════════════════════════════════ */
+async function loadSocials() {
+  const tbody = document.getElementById('socialTableBody');
+  tbody.innerHTML = '<tr><td colspan="4"><div class="loading-rows"><div class="loading-row"></div></div></td></tr>';
+  try {
+    const rows = await sb('socials', 'GET', null, '?order=sort_order.asc');
+    if (!rows.length) { tbody.innerHTML = '<tr><td colspan="4"><div class="empty-state"><div class="emoji">🔗</div><p>Belum ada link sosial.</p></div></td></tr>'; return; }
+    tbody.innerHTML = rows.map(r => `
+      <tr>
+        <td class="emoji-cell">${r.icon||'🔗'}</td>
+        <td><strong>${r.label}</strong></td>
+        <td><a href="${r.url}" target="_blank" style="color:var(--red);font-size:.85rem;">${r.url}</a></td>
+        <td><div class="actions">
+          <button class="btn-sm btn-edit" onclick="editSocial(${JSON.stringify(r).replace(/"/g,'&quot;')})">✏️</button>
+          <button class="btn-sm btn-del" onclick="deleteSocial('${r.id}')">🗑️</button>
+        </div></td>
+      </tr>`).join('');
+  } catch(e) {
+    tbody.innerHTML = '<tr><td colspan="4" style="padding:16px;color:var(--gray-500);font-size:.85rem;">Tabel <code>socials</code> belum dibuat. Jalankan SQL schema di Pengaturan.</td></tr>';
+  }
+}
+
+function socialForm(r = {}) {
+  return `
+    <div class="form-row">
+      <div class="form-group"><label>Label (nama platform)</label><input id="fLabel" value="${r.label||''}" placeholder="LinkedIn" /></div>
+      <div class="form-group"><label>Icon / Emoji</label><input id="fIcon" value="${r.icon||''}" placeholder="💼" /></div>
+    </div>
+    <div class="form-group"><label>URL</label><input id="fUrl" value="${r.url||''}" placeholder="https://linkedin.com/in/..." /></div>
+    <div class="form-group"><label>Urutan</label><input id="fSort" type="number" value="${r.sort_order||0}" /></div>`;
+}
+
+document.getElementById('addSocialBtn').onclick = () => openModal('Tambah Link Sosial', socialForm(), async () => {
+  const data = { label: v('fLabel'), icon: v('fIcon'), url: v('fUrl'), sort_order: parseInt(v('fSort')||0) };
+  try { await sb('socials', 'POST', data); toast('Link sosial ditambahkan!', 'success'); closeModal(); loadSocials(); } catch(e) { toast(e.message, 'error'); }
+});
+
+function editSocial(r) {
+  openModal('Edit Link Sosial', socialForm(r), async () => {
+    const data = { label: v('fLabel'), icon: v('fIcon'), url: v('fUrl'), sort_order: parseInt(v('fSort')||0) };
+    try { await sb(`socials?id=eq.${r.id}`, 'PATCH', data); toast('Link sosial diperbarui!', 'success'); closeModal(); loadSocials(); } catch(e) { toast(e.message, 'error'); }
+  });
+}
+
+async function deleteSocial(id) {
+  if (!await confirm('Hapus link sosial ini?', '')) return;
+  try { await sb(`socials?id=eq.${id}`, 'DELETE'); toast('Link dihapus.'); loadSocials(); } catch(e) { toast(e.message, 'error'); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SETTINGS
+═══════════════════════════════════════════════════════════════ */
+document.getElementById('saveCfgBtn').onclick = () => {
+  const url = v('cfgUrl'); const key = v('cfgKey');
+  if (!url || !key) { toast('URL dan Key wajib diisi!', 'error'); return; }
+  localStorage.setItem('sb_url', url); localStorage.setItem('sb_key', key);
+  SUPABASE_URL = url; SUPABASE_ANON = key;
+  toast('Koneksi Supabase diperbarui!', 'success');
+};
+
+document.getElementById('saveBrandBtn').onclick = async () => {
+  const color = v('colorAccent'); const name = v('brandName');
+  try {
+    await Promise.all([
+      sb('site_config', 'POST', { key: 'brand_color', value: color }, '').catch(() => sb('site_config?key=eq.brand_color', 'PATCH', { value: color })),
+      sb('site_config', 'POST', { key: 'brand_name', value: name }, '').catch(() => sb('site_config?key=eq.brand_name', 'PATCH', { value: name }))
+    ]);
+    toast('Branding tersimpan!', 'success');
+  } catch(e) { toast(e.message, 'error'); }
+};
+
+document.getElementById('saveAdminBtn').onclick = async () => {
+  const email = v('newAdminEmail'); const pass = v('newAdminPass'); const confirm2 = v('confirmAdminPass');
+  if (pass !== confirm2) { toast('Password tidak cocok!', 'error'); return; }
+  if (pass.length < 8) { toast('Password minimal 8 karakter!', 'error'); return; }
+  try {
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      method: 'PUT',
+      headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${currentSession}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pass })
+    });
+    if (!res.ok) throw new Error('Gagal update akun');
+    toast('Akun admin diperbarui!', 'success');
+  } catch(e) { toast(e.message, 'error'); }
+};
+
+/* SQL Schema for copy */
+const SCHEMA_SQL = `-- Jalankan di Supabase SQL Editor
+
+-- Tabel site_config (Hero, Tentang, Branding)
+create table if not exists site_config (
+  key   text primary key,
+  value text
+);
+alter table site_config enable row level security;
+create policy "Public read site_config"
+  on site_config for select using (true);
+create policy "Auth write site_config"
+  on site_config for all using (auth.role() = 'authenticated');
+
+-- Tabel socials (link sosial Hero)
+create table if not exists socials (
+  id         uuid primary key default gen_random_uuid(),
+  label      text not null,
+  icon       text,
+  url        text not null,
+  sort_order int default 0
+);
+alter table socials enable row level security;
+create policy "Public read socials"
+  on socials for select using (true);
+create policy "Auth write socials"
+  on socials for all using (auth.role() = 'authenticated');`;
+
+document.getElementById('schemaBox').value = SCHEMA_SQL;
+function copySchema() {
+  navigator.clipboard.writeText(SCHEMA_SQL).then(() => toast('SQL disalin!', 'success'));
+}
+
+// Pre-fill Supabase config if saved
+document.getElementById('cfgUrl').value = SUPABASE_URL;
+document.getElementById('cfgKey').value = SUPABASE_ANON;
+
+/* ─── Helpers ─── */
+function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function setVal(id, val) { const el = document.getElementById(id); if (el) el.value = val; }
+</script>
+</body>
+</html>

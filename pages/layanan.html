@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Layanan — Dede Separman</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet" />
+</head>
+<body class="page-layanan">
+  <header class="navbar scrolled" id="navbar">
+    <div class="navbar__inner">
+      <a href="../index.html" class="navbar__logo">Dede Separman</a>
+      <nav class="navbar__menu" id="navMenu">
+        <a href="../index.html" class="navbar__link">Home</a>
+        <a href="tentang.html" class="navbar__link">Tentang</a>
+        <a href="skill.html" class="navbar__link">Skill</a>
+        <a href="proyek.html" class="navbar__link">Proyek</a>
+        <a href="layanan.html" class="navbar__link active">Layanan</a>
+        <a href="blog.html" class="navbar__link">Blog</a>
+        <a href="kontak.html" class="navbar__link">Kontak</a>
+      </nav>
+      <div class="navbar__lang"><a href="#" class="lang-btn active" data-lang="id">ID</a><a href="#" class="lang-btn" data-lang="en">EN</a></div>
+      <button class="navbar__burger" id="burgerBtn"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <p class="section-label">Apa Yang Saya Tawarkan</p>
+        <h1 class="page-title">Layanan <span class="accent">Saya</span></h1>
+        <p class="page-subtitle">Solusi digital yang terukur, hemat biaya, dan berdampak langsung pada produktivitas Anda.</p>
+      </div>
+    </section>
+    <section class="section-pad">
+      <div class="container">
+        <div class="layanan-grid" id="layananGrid">
+          <div class="project-skeleton" style="height:300px"></div>
+          <div class="project-skeleton" style="height:300px"></div>
+          <div class="project-skeleton" style="height:300px"></div>
+          <div class="project-skeleton" style="height:300px"></div>
+        </div>
+      </div>
+    </section>
+    <section class="cta-section section-pad">
+      <div class="container cta-inner">
+        <h2>Butuh layanan yang <span class="accent">custom</span>?</h2>
+        <p>Setiap bisnis punya kebutuhan unik. Mari diskusi solusi yang paling tepat untuk Anda.</p>
+        <a href="kontak.html" class="btn btn--primary btn--lg">Konsultasi Gratis</a>
+      </div>
+    </section>
+  </main>
+  <footer class="footer"><div class="container footer__inner"><p class="footer__brand">Dede Separman</p><p class="footer__copy">© <span id="year"></span> Dede Separman.</p><nav class="footer__nav"><a href="kontak.html">Kontak</a></nav></div></footer>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/main.js"></script>
+  <script>
+    async function initLayanan() {
+      const grid = document.getElementById('layananGrid');
+      let services = [];
+      try {
+        if (window.DB) services = await window.DB.loadServices();
+        if (!services.length) services = getFallback();
+      } catch { services = getFallback(); }
+
+      grid.innerHTML = services.map(s => `
+        <div class="layanan-card">
+          <div class="layanan-card__icon">${s.icon || '🛠️'}</div>
+          <h3>${s.title}</h3>
+          <p>${s.description || ''}</p>
+          ${s.features && s.features.length
+            ? `<ul>${s.features.map(f => `<li>${f}</li>`).join('')}</ul>`
+            : ''}
+          ${s.price_label ? `<p class="layanan-card__price">${s.price_label}</p>` : ''}
+          <a href="kontak.html" class="btn btn--outline" style="margin-top:auto">Pesan Sekarang</a>
+        </div>
+      `).join('');
+    }
+
+    function getFallback() {
+      return [
+        { icon: '⚡', title: 'Google Apps Script', description: 'Otomatisasi workflow dan integrasi layanan Google.', features: ['Integrasi Workspace','Trigger & Scheduler','Custom Add-on'], price_label: 'Mulai Rp 300rb' },
+        { icon: '📱', title: 'AppSheet No-Code', description: 'Aplikasi mobile/web tanpa coding berbasis Sheets.', features: ['Formulir dinamis','Notifikasi push','Role-based access'], price_label: 'Mulai Rp 500rb' },
+        { icon: '📊', title: 'Excel & Data', description: 'Dashboard dan laporan otomatis dengan Excel.', features: ['Macro & VBA','Power Query','Template laporan'], price_label: 'Mulai Rp 200rb' },
+        { icon: '🌐', title: 'Web App', description: 'Web app ringan dengan Vercel + Supabase backend.', features: ['Responsive design','REST API','Supabase DB'], price_label: 'Mulai Rp 800rb' },
+      ];
+    }
+
+    initLayanan();
+  </script>
+</body>
+</html>

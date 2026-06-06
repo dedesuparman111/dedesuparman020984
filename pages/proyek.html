@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Proyek — Dede Separman</title>
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet" />
+</head>
+<body class="page-proyek">
+
+  <header class="navbar scrolled" id="navbar">
+    <div class="navbar__inner">
+      <a href="../index.html" class="navbar__logo">Dede Separman</a>
+      <nav class="navbar__menu" id="navMenu">
+        <a href="../index.html" class="navbar__link">Home</a>
+        <a href="tentang.html" class="navbar__link">Tentang</a>
+        <a href="skill.html" class="navbar__link">Skill</a>
+        <a href="proyek.html" class="navbar__link active">Proyek</a>
+        <a href="layanan.html" class="navbar__link">Layanan</a>
+        <a href="blog.html" class="navbar__link">Blog</a>
+        <a href="kontak.html" class="navbar__link">Kontak</a>
+      </nav>
+      <div class="navbar__lang">
+        <a href="#" class="lang-btn active" data-lang="id">ID</a>
+        <a href="#" class="lang-btn" data-lang="en">EN</a>
+      </div>
+      <button class="navbar__burger" id="burgerBtn"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-header">
+      <div class="container">
+        <p class="section-label">Portofolio</p>
+        <h1 class="page-title">Proyek <span class="accent">Saya</span></h1>
+        <p class="page-subtitle">Kumpulan proyek nyata yang telah saya kerjakan untuk berbagai klien dan kebutuhan.</p>
+      </div>
+    </section>
+
+    <section class="section-pad">
+      <div class="container">
+        <!-- FILTER BAR -->
+        <div class="filter-bar" id="filterBar">
+          <button class="filter-btn active" data-filter="all">Semua</button>
+          <button class="filter-btn" data-filter="Google Apps Script">Apps Script</button>
+          <button class="filter-btn" data-filter="AppSheet">AppSheet</button>
+          <button class="filter-btn" data-filter="Excel">Excel</button>
+          <button class="filter-btn" data-filter="Web App">Web App</button>
+        </div>
+
+        <!-- GRID -->
+        <div class="projects-grid" id="projectsGrid">
+          <div class="project-skeleton"></div>
+          <div class="project-skeleton"></div>
+          <div class="project-skeleton"></div>
+          <div class="project-skeleton"></div>
+          <div class="project-skeleton"></div>
+          <div class="project-skeleton"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p class="footer__brand">Dede Separman</p>
+      <p class="footer__copy">© <span id="year"></span> Dede Separman.</p>
+      <nav class="footer__nav"><a href="kontak.html">Kontak</a><a href="blog.html">Blog</a></nav>
+    </div>
+  </footer>
+
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/main.js"></script>
+  <script>
+    // Extended project page logic
+    let allProjects = [];
+
+    async function initProjects() {
+      const grid = document.getElementById('projectsGrid');
+      try {
+        if (window.DB) {
+          allProjects = await window.DB.loadProjects({ limit: 50 });
+        }
+        if (!allProjects.length) allProjects = getFallbackProjects();
+      } catch {
+        allProjects = getFallbackProjects();
+      }
+      renderFiltered('all');
+    }
+
+    function renderFiltered(filter) {
+      const grid = document.getElementById('projectsGrid');
+      const filtered = filter === 'all'
+        ? allProjects
+        : allProjects.filter(p => p.tag === filter);
+
+      if (!filtered.length) {
+        grid.innerHTML = '<p style="color:var(--gray-400);grid-column:1/-1">Belum ada proyek dalam kategori ini.</p>';
+        return;
+      }
+
+      grid.innerHTML = filtered.map(p => `
+        <article class="project-card" data-tag="${p.tag || ''}">
+          ${p.image_url
+            ? `<img src="${p.image_url}" alt="${p.title}" class="project-card__img" loading="lazy">`
+            : `<div class="project-card__img-placeholder">${p.emoji || '🛠️'}</div>`
+          }
+          <div class="project-card__body">
+            <span class="project-tag">${p.tag || 'Project'}</span>
+            <h3>${p.title}</h3>
+            <p>${p.summary || ''}</p>
+            ${p.url ? `<a href="${p.url}" target="_blank" class="btn btn--outline" style="margin-top:1rem;font-size:.75rem;padding:.5rem 1rem;">Lihat Demo →</a>` : ''}
+          </div>
+        </article>
+      `).join('');
+    }
+
+    // Filter buttons
+    document.getElementById('filterBar').addEventListener('click', (e) => {
+      const btn = e.target.closest('.filter-btn');
+      if (!btn) return;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderFiltered(btn.dataset.filter);
+    });
+
+    function getFallbackProjects() {
+      return [
+        { emoji: '📋', tag: 'Google Apps Script', title: 'Sistem Absensi Otomatis', summary: 'Otomatisasi absensi karyawan menggunakan Google Forms & Sheets dengan notifikasi email.' },
+        { emoji: '📦', tag: 'AppSheet', title: 'Aplikasi Inventaris', summary: 'Manajemen stok gudang real-time menggunakan AppSheet + Google Sheets.' },
+        { emoji: '📈', tag: 'Excel', title: 'Dashboard Keuangan', summary: 'Laporan keuangan bulanan otomatis dengan Power Query & grafik dinamis.' },
+        { emoji: '🌐', tag: 'Web App', title: 'Portal Internal CKBLogistic', summary: 'Digital HUB internal untuk manajemen data logistik berbasis Apps Script Web App.' },
+        { emoji: '📧', tag: 'Google Apps Script', title: 'Email Blast Otomatis', summary: 'Kirim ribuan email personalisasi via Gmail dengan Google Apps Script + Sheets.' },
+        { emoji: '📱', tag: 'AppSheet', title: 'Sistem Pengajuan Cuti', summary: 'Aplikasi pengajuan dan approval cuti karyawan tanpa kode berbasis AppSheet.' },
+      ];
+    }
+
+    initProjects();
+  </script>
+</body>
+</html>
