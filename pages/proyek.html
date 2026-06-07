@@ -58,19 +58,6 @@
         </div>
       </div>
     </section>
-
-    <section class="section-pad" id="projectsPageLocked" style="display:none;">
-      <div class="container">
-        <div class="empty-state" style="background:var(--white);border-radius:var(--radius);padding:40px;box-shadow:var(--shadow);">
-          <div class="emoji">🔒</div>
-          <p style="font-weight:700;color:var(--black);margin-top:6px;font-size:1rem;">Halaman Proyek hanya bisa dibuka oleh Admin.</p>
-          <p style="color:var(--gray-500);margin-top:10px;line-height:1.6;">
-            Silakan login ke Admin Portal terlebih dahulu.
-          </p>
-          <a href="../admin.html" class="btn btn--primary" style="margin-top:18px;">Buka Admin Portal</a>
-        </div>
-      </div>
-    </section>
   </main>
 
   <footer class="footer">
@@ -84,35 +71,7 @@
   <script src="../js/supabase-client.js"></script>
   <script src="../js/main.js"></script>
   <script>
-    // Private admin-only gate for proyek.html
-    const $locked = document.getElementById('projectsPageLocked');
-    const $content = document.getElementById('projectsPageContent');
-    const $header = document.getElementById('projectsPageHeader');
-
-    async function bootstrapAdminGate() {
-      const token = localStorage.getItem('sb_admin_access_token');
-      const email = localStorage.getItem('sb_admin_email');
-
-      if (!token) return false;
-
-      // Use fixed REST endpoint with supabase-client constants if available.
-      // supabase-client.js exposes SUPABASE_URL and SUPABASE_ANON as top-level consts.
-      try {
-        const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-          headers: {
-            'apikey': SUPABASE_ANON,
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        if (!res.ok) return false;
-        return true;
-      } catch {
-        return false;
-      }
-    }
-
-    // Extended project page logic
+    // Public project page (no admin gate)
     let allProjects = [];
 
     async function initProjects() {
@@ -175,20 +134,7 @@
       ];
     }
 
-    (async () => {
-      const ok = await bootstrapAdminGate();
-      if (!ok) {
-        // lock
-        if ($locked) $locked.style.display = 'block';
-        if ($content) $content.style.display = 'none';
-        if ($header) $header.style.display = 'none';
-        return;
-      }
-      if ($locked) $locked.style.display = 'none';
-      if ($content) $content.style.display = '';
-      if ($header) $header.style.display = '';
-      initProjects();
-    })();
+    initProjects();
   </script>
 </body>
 </html>

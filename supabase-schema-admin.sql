@@ -8,6 +8,30 @@
 --  1. TABEL UTAMA
 -- ══════════════════════════════════════════════════════════════
 
+-- ── ADMINS (for private reads) ────────────────────────────────
+-- Insert admin users manually after running SQL:
+--   insert into admins(user_id) values ('<auth_uid>');
+-- Ensure you use the real auth.uid() value from Supabase.
+create table if not exists admins (
+  user_id uuid primary key default auth.uid()
+);
+
+alter table admins enable row level security;
+
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename='admins' and policyname='Admins read self') then
+    create policy "Admins read self" on admins
+      for select using (user_id = auth.uid());
+  end if;
+end $$;
+
+do $$ begin
+  if not exists (select 1 from pg_policies where tablename='admins' and policyname='Admins insert self') then
+    create policy "Admins insert self" on admins
+      for insert with check (user_id = auth.uid());
+  end if;
+end $$;
+
 -- ── PROJECTS ──────────────────────────────────────────────────
 create table if not exists projects (
   id          uuid primary key default gen_random_uuid(),
@@ -24,12 +48,21 @@ create table if not exists projects (
 
 alter table projects enable row level security;
 
+-- Public read: all visitors can read projects
 do $$ begin
   if not exists (select 1 from pg_policies where tablename='projects' and policyname='Public read projects') then
     create policy "Public read projects" on projects for select using (true);
   end if;
 end $$;
 
+-- If an old admin-only policy exists, remove it to avoid conflicts
+do $$ begin
+  if exists (select 1 from pg_policies where tablename='projects' and policyname='Admins read projects') then
+    execute 'drop policy "Admins read projects" on projects';
+  end if;
+end $$;
+
+-- Writes remain for authenticated users
 do $$ begin
   if not exists (select 1 from pg_policies where tablename='projects' and policyname='Auth write projects') then
     create policy "Auth write projects" on projects for all using (auth.role() = 'authenticated');
