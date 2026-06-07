@@ -38,11 +38,10 @@
 
     <section class="section-pad">
       <div class="container">
-        <div class="blog-grid" id="blogGrid">
-          <div class="project-skeleton"></div>
-          <div class="project-skeleton"></div>
-          <div class="project-skeleton"></div>
-        </div>
+        <div class="blog-grid" id="blogGrid"></div>
+        <p id="blogEmptyState" style="margin-top:2rem;color:var(--gray-600);display:none;">
+          Blog belum tersedia saat ini.
+        </p>
       </div>
     </section>
   </main>
@@ -58,40 +57,12 @@
   <script src="../js/supabase-client.js"></script>
   <script src="../js/main.js"></script>
   <script>
-    async function initBlog() {
-      const grid = document.getElementById('blogGrid');
-      let posts = [];
-      try {
-        if (window.DB) posts = await window.DB.loadPosts({ limit: 12 });
-        if (!posts.length) posts = getFallbackPosts();
-      } catch {
-        posts = getFallbackPosts();
-      }
-
-      grid.innerHTML = posts.map(p => `
-        <article class="blog-card">
-          <div class="blog-card__cover" style="background:${p.cover_color||'var(--gray-100)'};display:flex;align-items:center;justify-content:center;font-size:3rem">
-            ${p.cover_emoji || '📝'}
-          </div>
-          <div class="blog-card__body">
-            <p class="blog-card__meta">${p.published_at ? new Date(p.published_at).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'}) : ''} · ${p.read_time || '5'} menit baca</p>
-            <h3>${p.title}</h3>
-            <p>${p.excerpt || ''}</p>
-            <a href="blog-post.html?slug=${p.slug}" class="blog-card__link">Baca Selengkapnya →</a>
-          </div>
-        </article>
-      `).join('');
-    }
-
-    function getFallbackPosts() {
-      return [
-        { cover_emoji: '⚡', title: 'Cara Membuat Bot WhatsApp dengan Google Apps Script', excerpt: 'Tutorial lengkap integrasi WhatsApp API dengan Google Apps Script untuk notifikasi otomatis.', published_at: '2024-05-01', read_time: 8, slug: 'bot-whatsapp-apps-script' },
-        { cover_emoji: '📊', title: '5 Template AppSheet Gratis untuk UMKM', excerpt: 'Kumpulan template AppSheet siap pakai yang bisa langsung digunakan untuk bisnis kecil menengah.', published_at: '2024-04-15', read_time: 5, slug: 'template-appsheet-umkm' },
-        { cover_emoji: '🔄', title: 'Otomatisasi Laporan Bulanan dengan Google Sheets', excerpt: 'Langkah demi langkah membuat laporan otomatis yang ter-generate setiap awal bulan tanpa manual.', published_at: '2024-03-20', read_time: 6, slug: 'laporan-otomatis-sheets' },
-      ];
-    }
-
-    initBlog();
+    // Blog disembunyikan/ditiadakan kontennya (hapus duplikasi).
+    // Jika ingin aktifkan lagi, kembalikan logika initBlog di commit sebelumnya.
+    (function () {
+      const empty = document.getElementById('blogEmptyState');
+      if (empty) empty.style.display = 'block';
+    })();
   </script>
 </body>
 </html>

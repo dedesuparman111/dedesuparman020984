@@ -433,8 +433,9 @@ ul { list-style: none; }
 }
 .project-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
 .project-card__img {
-  width: 100%; height: 200px;
-  object-fit: cover;
+  width: 100%;
+  height: 200px;
+  object-fit: contain; /* avoid cropping user-uploaded covers */
   background: var(--gray-100);
 }
 .project-card__img-placeholder {
