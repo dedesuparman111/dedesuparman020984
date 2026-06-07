@@ -1,0 +1,5 @@
+- [ ] Update `supabase-schema-admin.sql` with Supabase Storage bucket + policies for project covers.
+- [ ] Update `admin.html` with:
+  - [ ] Bootstrap auth on page load (token persistence + validate session)
+  - [ ] Visual emoji picker for projects
+  - [ ] Local cover image upload to Supabase Storage + preview + save to `projects.image_url`

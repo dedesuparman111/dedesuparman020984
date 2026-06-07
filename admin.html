@@ -685,6 +685,50 @@
       text-align: center;
       box-shadow: var(--shadow-lg);
     }
+
+    /* ── PROJECT EMOJI PICKER ── */
+    .emoji-picker-wrap { margin-top: 8px; }
+    .emoji-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      gap: 6px;
+      max-height: 140px;
+      overflow: auto;
+      padding: 6px;
+      border: 1px solid var(--gray-100);
+      border-radius: var(--radius);
+      background: var(--gray-50);
+    }
+    .emoji-picker-btn {
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      font-size: 1.15rem;
+      line-height: 1.2;
+      padding: 6px 0;
+      border-radius: 8px;
+      transition: background .15s, transform .05s;
+    }
+    .emoji-picker-btn:hover { background: rgba(230,57,70,.10); }
+    .emoji-picker-btn:active { transform: scale(.98); }
+    .emoji-picker-btn.active { background: rgba(230,57,70,.18); }
+
+    /* ── PROJECT COVER UPLOAD ── */
+    .cover-upload-row { display: grid; grid-template-columns: 1fr 220px; gap: 14px; align-items: start; }
+    @media (max-width: 540px) { .cover-upload-row { grid-template-columns: 1fr; } }
+    .cover-preview {
+      width: 100%;
+      aspect-ratio: 4/3;
+      background: var(--gray-100);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      border: 1px dashed rgba(255,255,255,.2);
+    }
+    .cover-preview img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cover-hint { font-size: .73rem; color: var(--gray-500); margin-top: 4px; }
     .confirm-box .emoji { font-size: 2.5rem; margin-bottom: 12px; }
     .confirm-box h3 { font-size: 1.1rem; margin-bottom: 8px; }
     .confirm-box p { font-size: .88rem; color: var(--gray-500); margin-bottom: 24px; }
@@ -1074,9 +1118,55 @@
 <script>
 /* ═══════════════════════════════════════════════════════════════
    CONFIG — ganti dengan Supabase URL & Key Anda
-═══════════════════════════════════════════════════════════════ */
+═══════════════════════════════════════════════════════════════════════ */
 let SUPABASE_URL  ='https://eynwgdoicbbszfngywxf.supabase.co';
 let SUPABASE_ANON ='sb_publishable__uPzfujCdOFFN5Y_WP10Mw_WrjR2bSC';
+
+/* ── Storage ── */
+const STORAGE_BUCKET_PROJECT_COVERS = 'project-covers';
+
+/* ─── Bootstrap Auth (private admin hardening) ─── */
+let currentSession = null;
+let currentUser    = null;
+
+async function bootstrapAuth() {
+  // If user already logged in (remembered token), try validate on load
+  const token = localStorage.getItem('sb_admin_access_token');
+  const email = localStorage.getItem('sb_admin_email');
+  if (!token) return false;
+
+  try {
+    currentSession = token;
+
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      headers: {
+        'apikey': SUPABASE_ANON,
+        'Authorization': `Bearer ${currentSession}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!res.ok) throw new Error('Session tidak valid');
+    const data = await res.json();
+
+    currentUser = data.user || data;
+    document.getElementById('adminEmail').textContent = email || (currentUser.email || '');
+    document.getElementById('topbarUser').textContent = email || (currentUser.email || '');
+
+    // login screen hide, admin app show
+    document.getElementById('loginScreen').classList.add('hidden');
+    document.getElementById('adminApp').classList.add('visible');
+    loadDashboard();
+    return true;
+  } catch (e) {
+    // Clear invalid session
+    currentSession = null;
+    currentUser = null;
+    localStorage.removeItem('sb_admin_access_token');
+    localStorage.removeItem('sb_admin_email');
+    return false;
+  }
+}
 
 /* ─── Supabase REST helper ─── */
 async function sb(table, method = 'GET', body = null, query = '') {
@@ -1112,9 +1202,6 @@ async function signIn(email, password) {
   if (!res.ok) throw new Error(data.error_description || data.msg || 'Login gagal');
   return data;
 }
-
-let currentSession = null;
-let currentUser    = null;
 
 /* ─── Toast ─── */
 function toast(msg, type = 'default') {
@@ -1195,6 +1282,11 @@ document.getElementById('loginBtn').onclick = async () => {
     const data = await signIn(email, pass);
     currentSession = data.access_token;
     currentUser    = data.user;
+
+    // Persist session for bootstrapAuth() (admin privacy hardening)
+    localStorage.setItem('sb_admin_access_token', currentSession);
+    localStorage.setItem('sb_admin_email', email);
+
     document.getElementById('adminEmail').textContent = email;
     document.getElementById('topbarUser').textContent = email;
     document.getElementById('loginScreen').classList.add('hidden');
@@ -1328,6 +1420,7 @@ async function loadProjects() {
 }
 
 function projectForm(r = {}) {
+  const currentEmoji = r.emoji || '📋';
   return `
     <div class="form-row">
       <div class="form-group"><label>Judul Proyek</label><input id="fTitle" value="${r.title||''}" placeholder="Sistem Absensi Otomatis" /></div>
@@ -1336,22 +1429,91 @@ function projectForm(r = {}) {
     <div class="form-group"><label>Ringkasan (Summary)</label><input id="fSummary" value="${r.summary||''}" placeholder="Deskripsi singkat..." /></div>
     <div class="form-group"><label>Deskripsi Lengkap</label><textarea id="fDesc">${r.description||''}</textarea></div>
     <div class="form-row">
-      <div class="form-group"><label>Emoji Icon</label><input id="fEmoji" value="${r.emoji||''}" placeholder="📋" /></div>
+      <div class="form-group">
+        <label>Emoji Icon</label>
+        <input id="fEmoji" value="${currentEmoji.replace(/"/g,'"')}" placeholder="📋" style="margin-bottom:10px;" />
+        <div class="emoji-picker-wrap">
+          <div id="emojiPickerGrid" class="emoji-picker-grid" aria-label="Emoji picker"></div>
+          <div class="cover-hint">Klik emoji untuk memilih (bisa juga ketik manual).</div>
+        </div>
+      </div>
       <div class="form-group"><label>Urutan</label><input id="fSort" type="number" value="${r.sort_order||0}" /></div>
     </div>
-    <div class="form-group"><label>URL Gambar Cover</label><input id="fImg" value="${r.image_url||''}" placeholder="https://..." /></div>
+
+    <div class="form-group">
+      <label>Upload Cover (opsional)</label>
+      <div class="cover-upload-row">
+        <div>
+          <input type="file" id="fCoverFile" accept="image/*" />
+          <div class="cover-hint">Jika upload dipilih, URL gambar akan otomatis tersimpan ke database.</div>
+        </div>
+        <div class="cover-preview">
+          ${r.image_url ? `<img id="coverPreviewImg" src="${r.image_url}" alt="cover preview" />` : `<div style="color:var(--gray-500);font-size:.82rem;padding:10px;">Belum ada cover</div>`}
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>URL Gambar Cover (manual / fallback)</label>
+      <input id="fImg" value="${r.image_url||''}" placeholder="https://..." />
+    </div>
+
     <div class="form-group"><label>URL Demo / Repo</label><input id="fUrl" value="${r.url||''}" placeholder="https://..." /></div>`;
 }
 
 document.getElementById('addProjectBtn').onclick = () => openModal('Tambah Proyek', projectForm(), async () => {
-  const data = { title: v('fTitle'), tag: v('fTag'), summary: v('fSummary'), description: v('fDesc'), emoji: v('fEmoji'), sort_order: parseInt(v('fSort')||0), image_url: v('fImg'), url: v('fUrl') };
-  try { await sb('projects', 'POST', data); toast('Proyek ditambahkan!', 'success'); closeModal(); loadProjects(); } catch(e) { toast(e.message, 'error'); }
+  const fileEl = document.getElementById('fCoverFile');
+  const hasFile = !!(fileEl && fileEl.files && fileEl.files[0]);
+
+  const data = {
+    title: v('fTitle'),
+    tag: v('fTag'),
+    summary: v('fSummary'),
+    description: v('fDesc'),
+    emoji: v('fEmoji'),
+    sort_order: parseInt(v('fSort')||0),
+    image_url: v('fImg'),
+    url: v('fUrl')
+  };
+
+  try {
+    if (hasFile) {
+      const uploadedUrl = await uploadProjectCoverToStorage(fileEl.files[0], v('fTitle'));
+      data.image_url = uploadedUrl;
+    }
+    await sb('projects', 'POST', data);
+    toast('Proyek ditambahkan!', 'success');
+    closeModal();
+    loadProjects();
+  } catch(e) { toast(e.message, 'error'); }
 });
 
 function editProject(r) {
   openModal('Edit Proyek', projectForm(r), async () => {
-    const data = { title: v('fTitle'), tag: v('fTag'), summary: v('fSummary'), description: v('fDesc'), emoji: v('fEmoji'), sort_order: parseInt(v('fSort')||0), image_url: v('fImg'), url: v('fUrl') };
-    try { await sb(`projects?id=eq.${r.id}`, 'PATCH', data); toast('Proyek diperbarui!', 'success'); closeModal(); loadProjects(); } catch(e) { toast(e.message, 'error'); }
+    const fileEl = document.getElementById('fCoverFile');
+    const hasFile = !!(fileEl && fileEl.files && fileEl.files[0]);
+
+    const data = {
+      title: v('fTitle'),
+      tag: v('fTag'),
+      summary: v('fSummary'),
+      description: v('fDesc'),
+      emoji: v('fEmoji'),
+      sort_order: parseInt(v('fSort')||0),
+      image_url: v('fImg'),
+      url: v('fUrl')
+    };
+
+    try {
+      if (hasFile) {
+        const uploadedUrl = await uploadProjectCoverToStorage(fileEl.files[0], v('fTitle'));
+        data.image_url = uploadedUrl;
+      }
+      await sb(`projects?id=eq.${r.id}`, 'PATCH', data);
+      toast('Proyek diperbarui!', 'success');
+      closeModal();
+      loadProjects();
+    } catch(e) { toast(e.message, 'error'); }
   });
 }
 

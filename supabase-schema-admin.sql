@@ -264,7 +264,61 @@ on conflict do nothing;
 
 
 -- ══════════════════════════════════════════════════════════════
---  3. SELESAI
+--  3. STORAGE (Cover Gambar Proyek)
+--     Bucket: project-covers
+--     - Public read untuk gambar cover di website
+--     - Authenticated write (upload/update/delete) untuk admin panel
+-- ══════════════════════════════════════════════════════════════
+
+-- Buat bucket untuk cover proyek
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values (
+  'project-covers',
+  'project-covers',
+  true,
+  5242880, -- 5MB
+  array['image/png','image/jpeg','image/webp','image/gif']
+)
+on conflict (id) do nothing;
+
+-- Policies Storage: Public read semua object di bucket project-covers
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage'
+      and tablename = 'objects'
+      and policyname = 'Public read project-covers'
+  ) then
+    create policy "Public read project-covers"
+      on storage.objects
+      for select
+      using (bucket_id = 'project-covers');
+  end if;
+end $$;
+
+-- Policies Storage: Authenticated write untuk bucket project-covers
+do $$
+begin
+  if not exists (
+    select 1 from pg_policies
+    where schemaname = 'storage'
+      and tablename = 'objects'
+      and policyname = 'Auth write project-covers'
+  ) then
+    create policy "Auth write project-covers"
+      on storage.objects
+      for all
+      using (bucket_id = 'project-covers' and auth.role() = 'authenticated');
+  end if;
+end $$;
+
+-- Catatan:
+-- Pastikan Storage RLS aktif (biasanya sudah default).
+-- Jika upload gagal, cek: bucket name, policies, dan apakah Anda login via admin.html.
+
+-- ══════════════════════════════════════════════════════════════
+--  4. SELESAI
 --  Langkah selanjutnya:
 --  → Buat user admin di: Authentication → Users → Add User
 --  → Masukkan email & password admin Anda

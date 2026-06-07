@@ -79,24 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
       .catch(() => renderProjectsFallback(projectsGrid));
   }
 
-  /* ── LANGUAGE SWITCHER ── */
-  const langBtns = document.querySelectorAll('.lang-btn');
-  langBtns.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      langBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      // Language switching logic — extend as needed
-      document.documentElement.lang = btn.dataset.lang;
-      localStorage.setItem('lang', btn.dataset.lang);
-    });
-  });
-  // Restore preference
-  const savedLang = localStorage.getItem('lang');
-  if (savedLang) {
-    langBtns.forEach(b => b.classList.toggle('active', b.dataset.lang === savedLang));
-    document.documentElement.lang = savedLang;
-  }
+  
 
   /* ── SCROLL REVEAL ── */
   const revealEls = document.querySelectorAll(
