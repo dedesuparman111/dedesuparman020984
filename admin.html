@@ -739,7 +739,7 @@
 
 <!-- ═══ LOGIN SCREEN ═══════════════════════════════════════════ -->
 <div id="loginScreen">
-  <div class="login-box">
+<div class="login-box">
     <div class="login-logo">Dede<span>.</span>Admin</div>
     <div class="login-sub">Portal Manajemen Konten</div>
 
@@ -1064,7 +1064,7 @@
             </div>
             <div class="form-group">
               <label>Nama Brand / Logo</label>
-              <input type="text" id="brandName" placeholder="Dede Separman" />
+              <input type="text" id="brandName" placeholder="Dede Suparman" />
             </div>
             <button class="btn btn-primary" id="saveBrandBtn">Simpan Branding</button>
           </div>
@@ -1432,9 +1432,17 @@ function projectForm(r = {}) {
       <div class="form-group">
         <label>Emoji Icon</label>
         <input id="fEmoji" value="${currentEmoji.replace(/"/g,'"')}" placeholder="📋" style="margin-bottom:10px;" />
+
         <div class="emoji-picker-wrap">
+          <input
+            id="emojiPickerSearch"
+            type="text"
+            placeholder="Cari emoji... (contoh: lock, rocket, chart, mail)"
+            style="margin-bottom:10px;"
+          />
+
           <div id="emojiPickerGrid" class="emoji-picker-grid" aria-label="Emoji picker"></div>
-          <div class="cover-hint">Klik emoji untuk memilih (bisa juga ketik manual).</div>
+          <div class="cover-hint">Klik emoji untuk memilih. (Tetap bisa ketik manual di input)</div>
         </div>
       </div>
       <div class="form-group"><label>Urutan</label><input id="fSort" type="number" value="${r.sort_order||0}" /></div>
@@ -1702,7 +1710,7 @@ async function loadHero() {
   try {
     const rows = await sb('site_config', 'GET', null, '?select=key,value');
     const cfg = Object.fromEntries(rows.map(r => [r.key, r.value]));
-    setVal('heroName',     cfg.hero_name    || 'Dede Separman');
+    setVal('heroName',     cfg.hero_name    || 'Dede Suparman');
     setVal('heroTagline',  cfg.hero_tagline || '');
     setVal('heroDesc',     cfg.hero_desc    || '');
     setVal('heroCtaText',  cfg.hero_cta_text|| 'Lihat Portofolio');
@@ -1714,7 +1722,7 @@ async function loadHero() {
 }
 
 function updateHeroPreview() {
-  document.getElementById('prevName').textContent = document.getElementById('heroName').value || 'Dede Separman';
+  document.getElementById('prevName').textContent = document.getElementById('heroName').value || 'Dede Suparman';
   document.getElementById('prevDesc').textContent = document.getElementById('heroDesc').value || '...';
 }
 ['heroName','heroDesc'].forEach(id => document.getElementById(id).addEventListener('input', updateHeroPreview));
@@ -1893,6 +1901,206 @@ document.getElementById('cfgKey').value = SUPABASE_ANON;
 /* ─── Helpers ─── */
 function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
 function setVal(id, val) { const el = document.getElementById(id); if (el) el.value = val; }
+
+/* ── Admin: Emoji Picker (library/search) ── */
+function buildEmojiGrid(emojis, activeEmoji) {
+  const grid = document.getElementById('emojiPickerGrid');
+  if (!grid) return;
+
+  grid.innerHTML = '';
+  emojis.forEach(e => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'emoji-picker-btn' + (e === activeEmoji ? ' active' : '');
+    b.textContent = e;
+
+    b.onclick = () => {
+      const input = document.getElementById('fEmoji');
+      if (input) input.value = e;
+
+      grid.querySelectorAll('.emoji-picker-btn').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+    };
+
+    grid.appendChild(b);
+  });
+}
+
+function initEmojiPickerForCurrentModal() {
+  const grid  = document.getElementById('emojiPickerGrid');
+  const input = document.getElementById('fEmoji');
+  const search = document.getElementById('emojiPickerSearch');
+
+  if (!grid || !input || !search) return;
+
+  const emojiLibrary = [
+    { e: '📋', k: ['list', 'clipboard', 'docs', 'agenda', 'task'] },
+    { e: '📦', k: ['box', 'package', 'inventory', 'project'] },
+    { e: '📈', k: ['chart', 'growth', 'stats', 'finance'] },
+    { e: '🌐', k: ['web', 'world', 'internet', 'website'] },
+    { e: '📧', k: ['mail', 'email', 'inbox', 'message'] },
+    { e: '📱', k: ['mobile', 'app', 'phone'] },
+    { e: '🛠️', k: ['tools', 'work', 'wrench', 'build'] },
+    { e: '⚙️', k: ['settings', 'config', 'gear'] },
+    { e: '🧠', k: ['brain', 'ai', 'logic'] },
+    { e: '🚀', k: ['rocket', 'launch', 'speed'] },
+    { e: '💡', k: ['idea', 'light', 'insight'] },
+    { e: '🧩', k: ['puzzle', 'module', 'component'] },
+    { e: '🔧', k: ['wrench', 'edit', 'fix'] },
+    { e: '🧪', k: ['test', 'lab', 'experiment'] },
+    { e: '📝', k: ['note', 'notes', 'doc', 'write'] },
+    { e: '📣', k: ['announce', 'promo', 'megaphone'] },
+    { e: '🧾', k: ['receipt', 'invoice', 'bill'] },
+    { e: '🧰', k: ['kit', 'tools', 'resources'] },
+    { e: '📚', k: ['books', 'learn', 'reference'] },
+    { e: '🎯', k: ['target', 'goal'] },
+    { e: '🗂️', k: ['folder', 'archive', 'organize'] },
+    { e: '🧮', k: ['calc', 'math', 'compute'] },
+    { e: '📊', k: ['dashboard', 'report', 'data'] },
+    { e: '🔒', k: ['lock', 'security', 'privacy'] },
+    { e: '🔗', k: ['link', 'url', 'chain', 'connect'] },
+    { e: '🤖', k: ['bot', 'automation', 'robot'] },
+    { e: '🖥️', k: ['monitor', 'server', 'desktop'] },
+    { e: '🧑‍💻', k: ['dev', 'developer', 'code', 'coding'] },
+    { e: '🌟', k: ['star', 'feature', 'highlight'] },
+    { e: '🔥', k: ['hot', 'popular', 'energy'] },
+    { e: '✅', k: ['check', 'done', 'valid'] },
+    { e: '✨', k: ['sparkle', 'shine', 'clean'] },
+    { e: '🛡️', k: ['shield', 'protect'] },
+    { e: '📌', k: ['pin', 'tag', 'label'] },
+    { e: '🧯', k: ['help', 'safety', 'fire'] },
+    { e: '🎛️', k: ['control', 'tune', 'switch'] }
+  ];
+
+  const getActive = () => input.value || '📋';
+
+  const render = () => {
+    const q = (search.value || '').trim().toLowerCase();
+    const active = getActive();
+
+    if (!q) {
+      buildEmojiGrid(emojiLibrary.map(x => x.e), active);
+      return;
+    }
+
+    const filtered = emojiLibrary
+      .filter(x => x.e.includes(q) || x.k.some(k => k.includes(q)))
+      .map(x => x.e);
+
+    const fallback = emojiLibrary.map(x => x.e).slice(0, 10);
+    buildEmojiGrid(filtered.length ? filtered : fallback, active);
+  };
+
+  // initial
+  render();
+  search.oninput = render;
+}
+
+/* ── Admin: Project cover upload to Supabase Storage (REST) ── */
+function getCurrentUserId() {
+  if (!currentUser) return 'anon';
+  return currentUser.id || currentUser.user?.id || currentUser.sub || 'anon';
+}
+
+function publicUrlForProjectCover(path) {
+  return `${SUPABASE_URL}/storage/v1/object/public/${STORAGE_BUCKET_PROJECT_COVERS}/${path}`;
+}
+
+async function uploadProjectCoverToStorage(file, titleForName = '') {
+  if (!currentSession) throw new Error('Sesi admin belum valid. Login ulang.');
+
+  const userId = getCurrentUserId();
+  const safeTitle = (titleForName || 'project')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .slice(0, 40);
+
+  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+  const fileName = `${Date.now()}_${safeTitle}.${ext}`;
+  const path = `${userId}/${fileName}`;
+
+  // NOTE: REST upload endpoint
+  // POST /storage/v1/object/{bucket}/{objectName}
+  const objectName = encodeURIComponent(path).replace(/%2F/g, '/');
+  const uploadUrl = `${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET_PROJECT_COVERS}/${objectName}`;
+
+  const res = await fetch(uploadUrl, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_ANON,
+      'Authorization': `Bearer ${currentSession}`,
+      'Content-Type': file.type || 'application/octet-stream',
+      'x-upsert': 'true'
+    },
+    body: file
+  });
+
+  if (!res.ok) {
+    const errText = await res.text().catch(() => '');
+    throw new Error(errText ? `Upload gagal: ${errText}` : `Upload gagal (${res.status})`);
+  }
+
+  return publicUrlForProjectCover(path);
+}
+
+/* ── Hook emoji picker after modal body is injected ── */
+const _openModal = openModal;
+openModal = function(title, bodyHtml, saveFn) {
+  _openModal(title, bodyHtml, saveFn);
+
+  // after modal HTML injected
+  setTimeout(() => {
+    initEmojiPickerForCurrentModal();
+
+    const fCoverFile = document.getElementById('fCoverFile');
+    const preview = document.getElementById('coverPreviewImg');
+    if (fCoverFile && preview) {
+      fCoverFile.addEventListener('change', () => {
+        const file = fCoverFile.files && fCoverFile.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = () => { preview.src = reader.result; };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    // If preview img doesn't exist (no image_url), create on demand
+    if (fCoverFile && !preview) {
+      const coverPreviewContainer = document.querySelector('.cover-preview');
+      if (coverPreviewContainer && coverPreviewContainer.innerHTML.trim().startsWith('<div')) {
+        // ignore, it's fine
+      }
+      if (fCoverFile) {
+        fCoverFile.addEventListener('change', () => {
+          const file = fCoverFile.files && fCoverFile.files[0];
+          if (!file) return;
+
+          const container = document.querySelector('.cover-preview');
+          if (!container) return;
+
+          let img = document.getElementById('coverPreviewImg');
+          if (!img) {
+            img = document.createElement('img');
+            img.id = 'coverPreviewImg';
+            img.alt = 'cover preview';
+            container.innerHTML = '';
+            container.appendChild(img);
+          }
+
+          const reader = new FileReader();
+          reader.onload = () => { img.src = reader.result; };
+          reader.readAsDataURL(file);
+        }, { once: true });
+      }
+    }
+  }, 0);
+};
+
+// Ensure auth bootstrap runs even if placed earlier
+document.addEventListener('DOMContentLoaded', async () => {
+  try { await bootstrapAuth(); } catch(_) {}
+});
 </script>
 </body>
 </html>
