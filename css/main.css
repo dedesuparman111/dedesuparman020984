@@ -44,7 +44,19 @@ ul { list-style: none; }
 .bg-light   { background: var(--gray-50); }
 .text-center { text-align: center; }
 .mt-8       { margin-top: 3rem; }
+.mt-auto    { margin-top: auto; }
 .accent     { color: var(--red); }
+
+/* ── REVEAL HELPERS (no inline style injection) ── */
+.reveal-target {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .5s ease, transform .5s ease;
+}
+.revealed {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
 
 /* ── BUTTONS ── */
 .btn {
@@ -472,6 +484,7 @@ ul { list-style: none; }
   background-size: 200%;
   animation: skeleton 1.5s infinite;
 }
+.project-skeleton--tall { height: 300px; }
 
 /* ─────────────────────────────────────────
    CTA SECTION

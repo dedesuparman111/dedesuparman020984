@@ -89,16 +89,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const revealObs = new IntersectionObserver((entries) => {
       entries.forEach((e, i) => {
         if (e.isIntersecting) {
-          e.target.style.animationDelay = `${i * 0.07}s`;
-          e.target.classList.add('revealed');
+          // delay tetap via inline delay; tanpa injection CSS
+          e.target.style.transitionDelay = `${i * 0.07}s`;
+          e.target.classList.add('reveal-target', 'revealed');
           revealObs.unobserve(e.target);
         }
       });
     }, { threshold: 0.12 });
+
     revealEls.forEach(el => {
-      el.style.opacity = '0';
-      el.style.transform = 'translateY(20px)';
-      el.style.transition = 'opacity .5s ease, transform .5s ease';
+      el.classList.add('reveal-target');
       revealObs.observe(el);
     });
   }
@@ -180,20 +180,3 @@ function initContactForm() {
 
 // Initialize contact form if present
 initContactForm();
-
-/* ── REVEALED ANIMATION ── */
-document.addEventListener('animationend', (e) => {
-  if (e.target.classList.contains('revealed')) {
-    e.target.style.opacity = '';
-    e.target.style.transform = '';
-  }
-});
-// CSS for .revealed
-const styleEl = document.createElement('style');
-styleEl.textContent = `
-  .revealed {
-    opacity: 1 !important;
-    transform: translateY(0) !important;
-  }
-`;
-document.head.appendChild(styleEl);
