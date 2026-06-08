@@ -22,6 +22,7 @@
       --success:  #2ecc71;
       --warning:  #f39c12;
       --danger:   #e74c3c;
+      --blue:     #3498db;
       --font-head: 'Bebas Neue', sans-serif;
       --font-body: 'DM Sans', sans-serif;
       --radius:   10px;
@@ -68,340 +69,176 @@
       height: 4px;
       background: var(--red);
     }
-    .login-logo {
-      font-family: var(--font-head);
-      font-size: 2rem;
-      color: var(--black);
-      letter-spacing: 1px;
-      margin-bottom: 4px;
-    }
+    .login-logo { font-family: var(--font-head); font-size: 2rem; color: var(--black); letter-spacing: 1px; margin-bottom: 4px; }
     .login-logo span { color: var(--red); }
-    .login-sub {
-      font-size: .8rem;
-      color: var(--gray-500);
-      margin-bottom: 32px;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-    .login-box label {
-      display: block;
-      text-align: left;
-      font-size: .8rem;
-      font-weight: 600;
-      color: var(--gray-700);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-    }
-    .login-box input {
-      width: 100%;
-      padding: 11px 14px;
-      border: 1.5px solid var(--gray-100);
-      border-radius: var(--radius);
-      font-family: var(--font-body);
-      font-size: .95rem;
-      background: var(--gray-50);
-      color: var(--black);
-      margin-bottom: 18px;
-      transition: border-color .2s;
-      outline: none;
-    }
+    .login-sub { font-size: .8rem; color: var(--gray-500); margin-bottom: 32px; text-transform: uppercase; letter-spacing: 2px; }
+    .login-box label { display: block; text-align: left; font-size: .8rem; font-weight: 600; color: var(--gray-700); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+    .login-box input { width: 100%; padding: 11px 14px; border: 1.5px solid var(--gray-100); border-radius: var(--radius); font-family: var(--font-body); font-size: .95rem; background: var(--gray-50); color: var(--black); margin-bottom: 18px; transition: border-color .2s; outline: none; }
     .login-box input:focus { border-color: var(--red); background: var(--white); }
-    .login-btn {
-      width: 100%;
-      padding: 13px;
-      background: var(--red);
-      color: var(--white);
-      font-family: var(--font-head);
-      font-size: 1.1rem;
-      letter-spacing: 1.5px;
-      border: none;
-      border-radius: var(--radius);
-      cursor: pointer;
-      transition: background .2s, transform .1s;
-    }
+    .login-btn { width: 100%; padding: 13px; background: var(--red); color: var(--white); font-family: var(--font-head); font-size: 1.1rem; letter-spacing: 1.5px; border: none; border-radius: var(--radius); cursor: pointer; transition: background .2s, transform .1s; }
     .login-btn:hover { background: var(--red-dark); }
     .login-btn:active { transform: scale(.98); }
-    .login-error {
-      margin-top: 14px;
-      font-size: .85rem;
-      color: var(--danger);
-      display: none;
-    }
+    .login-error { margin-top: 14px; font-size: .85rem; color: var(--danger); display: none; }
     .login-error.show { display: block; }
 
     /* ── LAYOUT ── */
-    #adminApp {
-      display: none;
-      min-height: 100vh;
-    }
+    #adminApp { display: none; min-height: 100vh; }
     #adminApp.visible { display: flex; }
 
     /* SIDEBAR */
-    .sidebar {
-      width: var(--sidebar-w);
-      background: var(--black);
-      color: var(--white);
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      top: 0; left: 0;
-      height: 100vh;
-      z-index: 100;
-      overflow-y: auto;
-    }
-    .sidebar__logo {
-      padding: 24px 20px 18px;
-      border-bottom: 1px solid rgba(255,255,255,.08);
-    }
-    .sidebar__logo h1 {
-      font-family: var(--font-head);
-      font-size: 1.4rem;
-      letter-spacing: 1px;
-      color: var(--white);
-    }
+    .sidebar { width: var(--sidebar-w); background: var(--black); color: var(--white); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; overflow-y: auto; }
+    .sidebar__logo { padding: 24px 20px 18px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .sidebar__logo h1 { font-family: var(--font-head); font-size: 1.4rem; letter-spacing: 1px; color: var(--white); }
     .sidebar__logo h1 span { color: var(--red); }
-    .sidebar__logo p {
-      font-size: .7rem;
-      color: var(--gray-500);
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      margin-top: 2px;
-    }
-    .sidebar__section {
-      padding: 12px 12px 4px;
-      font-size: .65rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--gray-500);
-      font-weight: 700;
-    }
+    .sidebar__logo p { font-size: .7rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
+    .sidebar__section { padding: 12px 12px 4px; font-size: .65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--gray-500); font-weight: 700; }
     .sidebar__nav { flex: 1; padding: 8px 0; }
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 20px;
-      font-size: .88rem;
-      color: rgba(255,255,255,.65);
-      cursor: pointer;
-      border-radius: 0;
-      transition: all .15s;
-      border-left: 3px solid transparent;
-      user-select: none;
-    }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 20px; font-size: .88rem; color: rgba(255,255,255,.65); cursor: pointer; border-radius: 0; transition: all .15s; border-left: 3px solid transparent; user-select: none; }
     .nav-item:hover { color: var(--white); background: rgba(255,255,255,.05); }
     .nav-item.active { color: var(--white); background: rgba(230,57,70,.12); border-left-color: var(--red); }
     .nav-item .ni { font-size: 1rem; width: 20px; text-align: center; }
-    .sidebar__footer {
-      padding: 16px 20px;
-      border-top: 1px solid rgba(255,255,255,.08);
-    }
-    .logout-btn {
-      width: 100%;
-      padding: 9px 14px;
-      background: rgba(230,57,70,.15);
-      color: var(--red);
-      border: 1px solid rgba(230,57,70,.3);
-      border-radius: var(--radius);
-      font-family: var(--font-body);
-      font-size: .85rem;
-      cursor: pointer;
-      transition: all .2s;
-      font-weight: 600;
-    }
+    .sidebar__footer { padding: 16px 20px; border-top: 1px solid rgba(255,255,255,.08); }
+    .logout-btn { width: 100%; padding: 9px 14px; background: rgba(230,57,70,.15); color: var(--red); border: 1px solid rgba(230,57,70,.3); border-radius: var(--radius); font-family: var(--font-body); font-size: .85rem; cursor: pointer; transition: all .2s; font-weight: 600; }
     .logout-btn:hover { background: var(--red); color: var(--white); }
 
     /* MAIN AREA */
-    .main-area {
-      margin-left: var(--sidebar-w);
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+    .main-area { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 
     /* TOPBAR */
-    .topbar {
-      height: var(--topbar-h);
-      background: var(--white);
-      border-bottom: 1px solid var(--gray-100);
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      gap: 16px;
-    }
-    .topbar__title {
-      font-family: var(--font-head);
-      font-size: 1.3rem;
-      letter-spacing: .5px;
-      flex: 1;
-    }
-    .topbar__user {
-      font-size: .82rem;
-      color: var(--gray-500);
-    }
-    .topbar__badge {
-      background: var(--red);
-      color: var(--white);
-      font-size: .7rem;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 20px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
+    .topbar { height: var(--topbar-h); background: var(--white); border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; padding: 0 28px; position: sticky; top: 0; z-index: 50; gap: 16px; }
+    .topbar__title { font-family: var(--font-head); font-size: 1.3rem; letter-spacing: .5px; flex: 1; }
+    .topbar__user { font-size: .82rem; color: var(--gray-500); }
+    .topbar__badge { background: var(--red); color: var(--white); font-size: .7rem; font-weight: 700; padding: 3px 8px; border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; }
 
     /* CONTENT */
-    .content {
-      padding: 28px;
-      flex: 1;
-    }
+    .content { padding: 28px; flex: 1; }
 
     /* PANELS */
     .panel { display: none; }
     .panel.active { display: block; }
 
     /* TOAST */
-    #toast {
-      position: fixed;
-      bottom: 28px; right: 28px;
-      background: var(--black);
-      color: var(--white);
-      padding: 12px 20px;
-      border-radius: var(--radius);
-      font-size: .88rem;
-      font-weight: 500;
-      box-shadow: var(--shadow-lg);
-      z-index: 9999;
-      transform: translateY(80px);
-      opacity: 0;
-      transition: all .3s;
-      border-left: 4px solid var(--red);
-    }
+    #toast { position: fixed; bottom: 28px; right: 28px; background: var(--black); color: var(--white); padding: 12px 20px; border-radius: var(--radius); font-size: .88rem; font-weight: 500; box-shadow: var(--shadow-lg); z-index: 9999; transform: translateY(80px); opacity: 0; transition: all .3s; border-left: 4px solid var(--red); }
     #toast.show { transform: translateY(0); opacity: 1; }
     #toast.success { border-left-color: var(--success); }
     #toast.error { border-left-color: var(--danger); }
 
     /* CARDS & GRID */
-    .section-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-    .section-header h2 {
-      font-family: var(--font-head);
-      font-size: 1.6rem;
-      letter-spacing: .5px;
-    }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .section-header h2 { font-family: var(--font-head); font-size: 1.6rem; letter-spacing: .5px; }
     .section-header h2 span { color: var(--red); }
 
-    /* STATS ROW (dashboard) */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 16px;
-      margin-bottom: 28px;
-    }
-    .stat-card {
-      background: var(--white);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: var(--shadow);
-      border-top: 3px solid var(--red);
-    }
-    .stat-card__val {
-      font-family: var(--font-head);
-      font-size: 2.2rem;
-      color: var(--red);
-      line-height: 1;
-    }
+    /* STATS ROW */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 16px; margin-bottom: 28px; }
+    .stat-card { background: var(--white); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow); border-top: 3px solid var(--red); }
+    .stat-card__val { font-family: var(--font-head); font-size: 2.2rem; color: var(--red); line-height: 1; }
     .stat-card__label { font-size: .8rem; color: var(--gray-500); margin-top: 4px; }
 
-    /* TABLE */
-    .table-card {
+    /* ══ LINK HUB CARDS (Dashboard) ══ */
+    .linkhub-section { margin-top: 28px; }
+    .linkhub-section h3 { font-family: var(--font-head); font-size: 1.3rem; letter-spacing: .5px; margin-bottom: 16px; }
+    .linkhub-section h3 span { color: var(--red); }
+    .linkhub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 14px;
+    }
+    .link-card {
       background: var(--white);
-      border-radius: var(--radius);
+      border-radius: 12px;
       box-shadow: var(--shadow);
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: var(--black);
+      transition: transform .18s, box-shadow .18s, border-color .18s;
+      border: 1.5px solid var(--gray-100);
+      position: relative;
       overflow: hidden;
-      margin-bottom: 20px;
     }
-    .table-card table {
-      width: 100%;
-      border-collapse: collapse;
+    .link-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--red);
+      transform: scaleY(0);
+      transition: transform .2s;
+      transform-origin: bottom;
     }
-    .table-card th {
+    .link-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: var(--gray-300); }
+    .link-card:hover::before { transform: scaleY(1); }
+    .link-card__icon {
+      width: 46px; height: 46px;
+      border-radius: 10px;
       background: var(--gray-50);
-      padding: 11px 16px;
-      font-size: .75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      color: var(--gray-500);
-      text-align: left;
-      border-bottom: 1px solid var(--gray-100);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+      overflow: hidden;
+      border: 1px solid var(--gray-100);
     }
-    .table-card td {
-      padding: 12px 16px;
-      font-size: .88rem;
-      border-bottom: 1px solid var(--gray-50);
-      vertical-align: middle;
+    .link-card__icon img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+    .link-card__body { flex: 1; min-width: 0; }
+    .link-card__name { font-weight: 700; font-size: .92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .link-card__url { font-size: .75rem; color: var(--gray-500); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+    .link-card__arrow { font-size: .85rem; color: var(--gray-300); flex-shrink: 0; }
+    .link-card-admin-actions { display: flex; gap: 6px; margin-top: 10px; }
+
+    /* ══ LINK HUB TABLE (Settings panel) ══ */
+    .linkhub-settings-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items: start; }
+    @media (max-width: 900px) { .linkhub-settings-wrap { grid-template-columns: 1fr; } }
+    .settings-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px; }
+    .settings-card h3 { font-family: var(--font-head); font-size: 1.2rem; margin-bottom: 18px; letter-spacing: .5px; }
+    .settings-card h3 span { color: var(--red); }
+
+    /* FORM inside settings */
+    .settings-form .form-group { margin-bottom: 14px; }
+    .settings-form label { display: block; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--gray-700); margin-bottom: 6px; }
+    .settings-form input { width: 100%; padding: 10px 13px; border: 1.5px solid var(--gray-100); border-radius: var(--radius); font-family: var(--font-body); font-size: .9rem; background: var(--gray-50); color: var(--black); outline: none; transition: border-color .2s; }
+    .settings-form input:focus { border-color: var(--red); background: var(--white); }
+    .settings-form .hint { font-size: .73rem; color: var(--gray-500); margin-top: 4px; }
+
+    /* Icon preview */
+    .icon-preview-wrap { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+    .icon-preview-box {
+      width: 48px; height: 48px;
+      border-radius: 10px;
+      border: 1.5px solid var(--gray-100);
+      background: var(--gray-50);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      overflow: hidden;
     }
+    .icon-preview-box img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+    .icon-preview-label { font-size: .8rem; color: var(--gray-500); }
+
+    /* Quick emoji buttons */
+    .emoji-quick { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .emoji-quick-btn { border: 1.5px solid var(--gray-100); background: var(--gray-50); border-radius: 6px; cursor: pointer; font-size: 1.2rem; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; transition: border-color .15s, background .15s; }
+    .emoji-quick-btn:hover { border-color: var(--red); background: rgba(230,57,70,.07); }
+
+    /* TABLE */
+    .table-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 20px; }
+    .table-card table { width: 100%; border-collapse: collapse; }
+    .table-card th { background: var(--gray-50); padding: 11px 16px; font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--gray-500); text-align: left; border-bottom: 1px solid var(--gray-100); }
+    .table-card td { padding: 12px 16px; font-size: .88rem; border-bottom: 1px solid var(--gray-50); vertical-align: middle; }
     .table-card tr:last-child td { border-bottom: none; }
     .table-card tr:hover td { background: var(--gray-50); }
     .emoji-cell { font-size: 1.4rem; }
-    .tag-pill {
-      display: inline-block;
-      padding: 2px 10px;
-      border-radius: 20px;
-      font-size: .72rem;
-      font-weight: 600;
-      background: rgba(230,57,70,.1);
-      color: var(--red);
-    }
-    .level-bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .level-bar__track {
-      flex: 1;
-      height: 5px;
-      background: var(--gray-100);
-      border-radius: 10px;
-      overflow: hidden;
-      max-width: 80px;
-    }
-    .level-bar__fill {
-      height: 100%;
-      background: var(--red);
-      border-radius: 10px;
-    }
-    .status-dot {
-      display: inline-block;
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      margin-right: 6px;
-    }
+    .tag-pill { display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: .72rem; font-weight: 600; background: rgba(230,57,70,.1); color: var(--red); }
+    .level-bar { display: flex; align-items: center; gap: 8px; }
+    .level-bar__track { flex: 1; height: 5px; background: var(--gray-100); border-radius: 10px; overflow: hidden; max-width: 80px; }
+    .level-bar__fill { height: 100%; background: var(--red); border-radius: 10px; }
+    .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
     .status-dot.published { background: var(--success); }
     .status-dot.draft { background: var(--gray-300); }
 
     /* ACTION BTNS */
     .actions { display: flex; gap: 6px; }
-    .btn-sm {
-      padding: 5px 12px;
-      border-radius: 6px;
-      font-size: .78rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: all .15s;
-      font-family: var(--font-body);
-    }
+    .btn-sm { padding: 5px 12px; border-radius: 6px; font-size: .78rem; font-weight: 600; cursor: pointer; border: none; transition: all .15s; font-family: var(--font-body); }
     .btn-edit { background: var(--gray-100); color: var(--black); }
     .btn-edit:hover { background: var(--gray-300); }
     .btn-del { background: rgba(231,76,60,.1); color: var(--danger); }
@@ -410,235 +247,91 @@
     .btn-view:hover { background: #3498db; color: var(--white); }
 
     /* MAIN BUTTONS */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 10px 20px;
-      border-radius: var(--radius);
-      font-family: var(--font-body);
-      font-size: .88rem;
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      transition: all .15s;
-    }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border-radius: var(--radius); font-family: var(--font-body); font-size: .88rem; font-weight: 600; cursor: pointer; border: none; transition: all .15s; }
     .btn-primary { background: var(--red); color: var(--white); }
     .btn-primary:hover { background: var(--red-dark); }
     .btn-secondary { background: var(--gray-100); color: var(--black); }
     .btn-secondary:hover { background: var(--gray-300); }
     .btn-success { background: rgba(46,204,113,.15); color: #27ae60; border: 1px solid rgba(46,204,113,.3); }
     .btn-success:hover { background: var(--success); color: var(--white); }
+    .btn-full { width: 100%; justify-content: center; margin-top: 4px; }
 
     /* MODAL */
-    .modal-backdrop {
-      position: fixed; inset: 0;
-      background: rgba(26,26,46,.6);
-      z-index: 200;
-      display: flex;
-      align-items: flex-start;
-      justify-content: center;
-      padding: 40px 20px;
-      overflow-y: auto;
-      backdrop-filter: blur(2px);
-    }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(26,26,46,.6); z-index: 200; display: flex; align-items: flex-start; justify-content: center; padding: 40px 20px; overflow-y: auto; backdrop-filter: blur(2px); }
     .modal-backdrop.hidden { display: none; }
-    .modal {
-      background: var(--white);
-      border-radius: 14px;
-      width: 100%;
-      max-width: 580px;
-      box-shadow: var(--shadow-lg);
-      overflow: hidden;
-      animation: slideUp .25s ease;
-    }
-    @keyframes slideUp {
-      from { transform: translateY(30px); opacity: 0; }
-      to   { transform: translateY(0); opacity: 1; }
-    }
-    .modal__head {
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--gray-100);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .modal__head h3 {
-      font-family: var(--font-head);
-      font-size: 1.3rem;
-      letter-spacing: .5px;
-    }
-    .modal__close {
-      width: 32px; height: 32px;
-      border: none;
-      background: var(--gray-100);
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1rem;
-      display: flex; align-items: center; justify-content: center;
-      transition: background .15s;
-    }
+    .modal { background: var(--white); border-radius: 14px; width: 100%; max-width: 580px; box-shadow: var(--shadow-lg); overflow: hidden; animation: slideUp .25s ease; }
+    @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .modal__head { padding: 20px 24px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
+    .modal__head h3 { font-family: var(--font-head); font-size: 1.3rem; letter-spacing: .5px; }
+    .modal__close { width: 32px; height: 32px; border: none; background: var(--gray-100); border-radius: 6px; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; transition: background .15s; }
     .modal__close:hover { background: var(--gray-300); }
     .modal__body { padding: 24px; max-height: 60vh; overflow-y: auto; }
-    .modal__foot {
-      padding: 16px 24px;
-      border-top: 1px solid var(--gray-100);
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-    }
+    .modal__foot { padding: 16px 24px; border-top: 1px solid var(--gray-100); display: flex; justify-content: flex-end; gap: 10px; }
 
     /* FORM */
-    .form-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .form-row.full { grid-template-columns: 1fr; }
     .form-group { margin-bottom: 16px; }
-    .form-group label {
-      display: block;
-      font-size: .78rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: .5px;
-      color: var(--gray-700);
-      margin-bottom: 6px;
-    }
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      width: 100%;
-      padding: 10px 13px;
-      border: 1.5px solid var(--gray-100);
-      border-radius: var(--radius);
-      font-family: var(--font-body);
-      font-size: .9rem;
-      background: var(--gray-50);
-      color: var(--black);
-      outline: none;
-      transition: border-color .2s;
-    }
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus { border-color: var(--red); background: var(--white); }
+    .form-group label { display: block; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--gray-700); margin-bottom: 6px; }
+    .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 10px 13px; border: 1.5px solid var(--gray-100); border-radius: var(--radius); font-family: var(--font-body); font-size: .9rem; background: var(--gray-50); color: var(--black); outline: none; transition: border-color .2s; }
+    .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--red); background: var(--white); }
     .form-group textarea { resize: vertical; min-height: 90px; }
-    .form-group .hint {
-      font-size: .73rem;
-      color: var(--gray-500);
-      margin-top: 4px;
-    }
+    .form-group .hint { font-size: .73rem; color: var(--gray-500); margin-top: 4px; }
 
     /* EMOJI PICKER */
     .emoji-picker-wrap { margin-top: 10px; }
-    .emoji-picker-search {
-      width: 100%;
-      padding: 10px 13px;
-      border: 1.5px solid var(--gray-100);
-      border-radius: var(--radius);
-      font-size: .9rem;
-      margin-bottom: 10px;
-    }
-    .emoji-picker-grid {
-      display: grid;
-      grid-template-columns: repeat(10, 1fr);
-      gap: 6px;
-      max-height: 200px;
-      overflow-y: auto;
-      padding: 10px;
-      border: 1px solid var(--gray-100);
-      border-radius: var(--radius);
-      background: var(--gray-50);
-    }
-    .emoji-picker-btn {
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      font-size: 1.5rem;
-      line-height: 1;
-      padding: 8px;
-      border-radius: 6px;
-      transition: background .15s, transform .05s;
-      aspect-ratio: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+    .emoji-picker-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; max-height: 200px; overflow-y: auto; padding: 10px; border: 1px solid var(--gray-100); border-radius: var(--radius); background: var(--gray-50); }
+    .emoji-picker-btn { border: none; background: transparent; cursor: pointer; font-size: 1.5rem; line-height: 1; padding: 8px; border-radius: 6px; transition: background .15s, transform .05s; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; }
     .emoji-picker-btn:hover { background: rgba(230,57,70,.15); }
     .emoji-picker-btn:active { transform: scale(.95); }
     .emoji-picker-btn.active { background: rgba(230,57,70,.3); }
 
     /* EMPTY STATE */
-    .empty-state {
-      text-align: center;
-      padding: 48px 20px;
-      color: var(--gray-500);
-    }
+    .empty-state { text-align: center; padding: 48px 20px; color: var(--gray-500); }
     .empty-state .emoji { font-size: 3rem; margin-bottom: 12px; }
     .empty-state p { font-size: .9rem; }
 
-    /* RESPONSIVE tweaks */
-    @media (max-width: 768px) {
-      .sidebar { transform: translateX(-100%); transition: transform .3s; }
-      .sidebar.open { transform: translateX(0); }
-      .main-area { margin-left: 0; }
-      .form-row { grid-template-columns: 1fr; }
-    }
+    /* RESPONSIVE */
+    @media (max-width: 768px) { .sidebar { transform: translateX(-100%); transition: transform .3s; } .sidebar.open { transform: translateX(0); } .main-area { margin-left: 0; } .form-row { grid-template-columns: 1fr; } }
 
     /* CONFIRM DELETE */
-    .confirm-overlay {
-      position: fixed; inset: 0;
-      background: rgba(26,26,46,.7);
-      z-index: 300;
-      display: flex; align-items: center; justify-content: center;
-      backdrop-filter: blur(2px);
-    }
+    .confirm-overlay { position: fixed; inset: 0; background: rgba(26,26,46,.7); z-index: 300; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
     .confirm-overlay.hidden { display: none; }
-    .confirm-box {
-      background: var(--white);
-      border-radius: 14px;
-      padding: 32px;
-      max-width: 380px;
-      width: 90%;
-      text-align: center;
-      box-shadow: var(--shadow-lg);
-    }
+    .confirm-box { background: var(--white); border-radius: 14px; padding: 32px; max-width: 380px; width: 90%; text-align: center; box-shadow: var(--shadow-lg); }
     .confirm-box .emoji { font-size: 2.5rem; margin-bottom: 12px; }
     .confirm-box h3 { font-size: 1.1rem; margin-bottom: 8px; }
     .confirm-box p { font-size: .88rem; color: var(--gray-500); margin-bottom: 24px; }
     .confirm-box .btns { display: flex; gap: 10px; justify-content: center; }
 
     /* LOADING */
-    .loading-rows {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      padding: 20px;
-    }
-    .loading-row {
-      height: 38px;
-      background: linear-gradient(90deg, var(--gray-50) 25%, var(--gray-100) 50%, var(--gray-50) 75%);
-      background-size: 200% 100%;
-      border-radius: 6px;
-      animation: shimmer 1.4s infinite;
-    }
+    .loading-rows { display: flex; flex-direction: column; gap: 12px; padding: 20px; }
+    .loading-row { height: 38px; background: linear-gradient(90deg, var(--gray-50) 25%, var(--gray-100) 50%, var(--gray-50) 75%); background-size: 200% 100%; border-radius: 6px; animation: shimmer 1.4s infinite; }
     @keyframes shimmer { to { background-position: -200% 0; } }
+
+    /* SQL COPY BLOCK */
+    .sql-block { background: #0d1117; border-radius: var(--radius); padding: 16px 20px; font-family: 'Courier New', monospace; font-size: .78rem; color: #c9d1d9; overflow-x: auto; margin-top: 12px; position: relative; line-height: 1.6; }
+    .sql-block .kw { color: #ff7b72; }
+    .sql-block .ty { color: #79c0ff; }
+    .sql-block .st { color: #a5d6ff; }
+    .sql-block .cm { color: #8b949e; font-style: italic; }
+    .copy-sql-btn { position: absolute; top: 10px; right: 10px; padding: 4px 12px; background: rgba(255,255,255,.1); color: #c9d1d9; border: 1px solid rgba(255,255,255,.15); border-radius: 6px; font-size: .72rem; cursor: pointer; font-family: var(--font-body); transition: background .15s; }
+    .copy-sql-btn:hover { background: rgba(255,255,255,.2); }
+
+    /* SORT DRAG HINT */
+    .drag-hint { font-size: .75rem; color: var(--gray-500); display: flex; align-items: center; gap: 4px; margin-bottom: 10px; }
   </style>
 </head>
 <body>
 
 <!-- ═══ LOGIN SCREEN ═════════════════════════════════════════════ -->
 <div id="loginScreen">
-<div class="login-box">
+  <div class="login-box">
     <div class="login-logo">Dede<span>.</span>Admin</div>
     <div class="login-sub">Portal Manajemen Konten</div>
-
     <label for="loginEmail">Email</label>
     <input type="email" id="loginEmail" placeholder="admin@example.com" autocomplete="username" />
-
     <label for="loginPass">Password</label>
     <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" />
-
     <button class="login-btn" id="loginBtn">MASUK</button>
     <div class="login-error" id="loginError"></div>
   </div>
@@ -655,32 +348,20 @@
     </div>
     <nav class="sidebar__nav">
       <div class="sidebar__section">Dashboard</div>
-      <div class="nav-item active" data-panel="dashboard">
-        <span class="ni">📊</span> Dashboard
-      </div>
+      <div class="nav-item active" data-panel="dashboard"><span class="ni">📊</span> Dashboard</div>
 
       <div class="sidebar__section">Konten Halaman</div>
-      <div class="nav-item" data-panel="skills">
-        <span class="ni">⚡</span> Skills
-      </div>
-      <div class="nav-item" data-panel="projects">
-        <span class="ni">📦</span> Proyek
-      </div>
-      <div class="nav-item" data-panel="services">
-        <span class="ni">🛠️</span> Layanan
-      </div>
-      <div class="nav-item" data-panel="blog">
-        <span class="ni">📝</span> Blog
-      </div>
+      <div class="nav-item" data-panel="skills"><span class="ni">⚡</span> Skills</div>
+      <div class="nav-item" data-panel="projects"><span class="ni">📦</span> Proyek</div>
+      <div class="nav-item" data-panel="services"><span class="ni">🛠️</span> Layanan</div>
+      <div class="nav-item" data-panel="blog"><span class="ni">📝</span> Blog</div>
       <div class="nav-item" data-panel="messages">
         <span class="ni">💬</span> Pesan Masuk
         <span id="msgBadge" style="margin-left:auto;background:var(--red);color:var(--white);font-size:.65rem;font-weight:700;padding:2px 6px;border-radius:10px;display:none"></span>
       </div>
 
       <div class="sidebar__section">Sistem</div>
-      <div class="nav-item" data-panel="settings">
-        <span class="ni">⚙️</span> Pengaturan
-      </div>
+      <div class="nav-item" data-panel="settings"><span class="ni">⚙️</span> Pengaturan</div>
     </nav>
     <div class="sidebar__footer">
       <div id="adminEmail" style="font-size:.75rem;color:var(--gray-500);margin-bottom:10px;"></div>
@@ -706,13 +387,26 @@
           <div class="stat-card"><div class="stat-card__val" id="stat-svc">–</div><div class="stat-card__label">Layanan</div></div>
           <div class="stat-card"><div class="stat-card__val" id="stat-skill">–</div><div class="stat-card__label">Skills</div></div>
           <div class="stat-card"><div class="stat-card__val" id="stat-msg">–</div><div class="stat-card__label">Pesan Masuk</div></div>
+          <div class="stat-card"><div class="stat-card__val" id="stat-links">–</div><div class="stat-card__label">Link Hub</div></div>
         </div>
-        <div class="table-card" style="padding:24px;">
+
+        <div class="table-card" style="padding:24px;margin-bottom:28px;">
           <h3 style="font-family:var(--font-head);font-size:1.2rem;margin-bottom:12px;">Selamat Datang, Admin 👋</h3>
           <p style="color:var(--gray-500);font-size:.9rem;line-height:1.6;">
             Gunakan menu di sebelah kiri untuk mengelola semua konten website Dede Suparman.
             Perubahan akan langsung tersimpan ke Supabase dan tampil di website publik.
           </p>
+        </div>
+
+        <!-- LINK HUB CARDS -->
+        <div class="linkhub-section">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+            <h3 style="font-family:var(--font-head);font-size:1.3rem;letter-spacing:.5px;">Link <span style="color:var(--red)">Hub</span></h3>
+            <button class="btn btn-primary" style="font-size:.8rem;padding:8px 16px;" onclick="activatePanel('settings')">+ Kelola Link</button>
+          </div>
+          <div class="linkhub-grid" id="dashLinkhubGrid">
+            <div class="loading-rows" style="grid-column:1/-1;"><div class="loading-row"></div><div class="loading-row"></div></div>
+          </div>
         </div>
       </div>
 
@@ -796,21 +490,138 @@
         <div class="section-header">
           <h2>Pengaturan <span>Sistem</span></h2>
         </div>
-        <div style="background:var(--white);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);">
-          <p style="color:var(--gray-500);font-size:.9rem;line-height:1.6;">Fitur pengaturan akan ditambahkan di sini.</p>
+
+        <!-- LINK HUB MANAGEMENT -->
+        <div style="margin-bottom:28px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+            <div style="width:4px;height:28px;background:var(--red);border-radius:2px;"></div>
+            <h2 style="font-family:var(--font-head);font-size:1.5rem;letter-spacing:.5px;">Link <span style="color:var(--red)">Hub</span></h2>
+          </div>
+
+          <div class="linkhub-settings-wrap">
+            <!-- FORM TAMBAH/EDIT -->
+            <div class="settings-card">
+              <h3 id="lhFormTitle">Tambah <span>Link Baru</span></h3>
+              <div class="settings-form" id="lhForm">
+                <input type="hidden" id="lhEditId" value="" />
+
+                <div class="form-group">
+                  <label>Nama / Label</label>
+                  <input type="text" id="lhName" placeholder="GitHub, WhatsApp, Website..." />
+                </div>
+
+                <div class="form-group">
+                  <label>URL / Link</label>
+                  <input type="url" id="lhUrl" placeholder="https://..." />
+                  <div class="hint">Masukkan URL lengkap termasuk https://</div>
+                </div>
+
+                <div class="form-group">
+                  <label>Urutan Tampil</label>
+                  <input type="number" id="lhSort" value="0" min="0" />
+                </div>
+
+                <div class="form-group">
+                  <label>Logo / Icon</label>
+                  <div class="hint" style="margin-bottom:8px;">Pilih emoji, atau tempel URL gambar/logo</div>
+
+                  <!-- Quick emojis -->
+                  <div class="emoji-quick" id="lhEmojiQuick">
+                    <button class="emoji-quick-btn" onclick="setLhEmoji('🔗')">🔗</button>
+                    <button class="emoji-quick-btn" onclick="setLhEmoji('🐙')">🐙</button>
+                    <button class="emoji-quick-btn" onclick="setLhEmoji('💬')">💬</button>
+                    <button class="emoji-quick-btn" onclick="setLhEmoji('📸')">📸</button>
+                    <button class="emoji-quick-btn" onclick="setLhEmoji('▶️')">▶️</button>
+                    <button class="emoji-quick-btn" onclick="setLhEmoji('💼')">💼</button>
+                    <button class="emoji-quick-btn" onclick="setLhEmoji('🌐')">🌐</button>
+                    <button class="emoji-quick-btn" onclick="setLhEmoji('📧')">📧</button>
+                    <button class="emoji-quick-btn" onclick="setLhEmoji('🎯')">🎯</button>
+                    <button class="emoji-quick-btn" onclick="setLhEmoji('💡')">💡</button>
+                  </div>
+
+                  <input type="text" id="lhIcon" placeholder="🔗 atau https://..." oninput="updateIconPreview()" />
+                  <div class="hint">Emoji langsung atau URL gambar (png, svg, jpg)</div>
+
+                  <!-- Preview -->
+                  <div class="icon-preview-wrap">
+                    <div class="icon-preview-box" id="lhIconPreview">🔗</div>
+                    <div class="icon-preview-label">Preview icon</div>
+                  </div>
+                </div>
+
+                <div style="display:flex;gap:10px;">
+                  <button class="btn btn-primary btn-full" id="lhSaveBtn" onclick="saveLinkHub()">💾 Simpan Link</button>
+                  <button class="btn btn-secondary" id="lhCancelBtn" onclick="resetLhForm()" style="display:none;padding:10px 14px;">✕</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- LIST LINKS -->
+            <div class="settings-card">
+              <h3>Daftar <span>Link</span></h3>
+              <div class="drag-hint">💡 Data tersimpan di tabel <code>link_hub</code> Supabase</div>
+              <div id="lhListContainer">
+                <div class="loading-rows"><div class="loading-row"></div><div class="loading-row"></div></div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <!-- SQL SETUP -->
+        <div class="settings-card" style="margin-top:0;">
+          <h3>Setup <span>Database SQL</span></h3>
+          <p style="color:var(--gray-500);font-size:.85rem;margin-bottom:8px;">Jalankan SQL ini di <strong>Supabase → SQL Editor</strong> untuk membuat tabel <code>link_hub</code>:</p>
+          <div class="sql-block" id="sqlBlock">
+            <button class="copy-sql-btn" onclick="copySql()">📋 Copy</button>
+<span class="cm">-- ═══════════════════════════════════════</span>
+<span class="cm">-- Tabel Link Hub untuk portofolio</span>
+<span class="cm">-- Jalankan di: Supabase → SQL Editor</span>
+<span class="cm">-- ═══════════════════════════════════════</span>
+
+<span class="kw">CREATE TABLE IF NOT EXISTS</span> link_hub (
+  id          <span class="ty">uuid</span>        <span class="kw">DEFAULT</span> gen_random_uuid() <span class="kw">PRIMARY KEY</span>,
+  name        <span class="ty">text</span>        <span class="kw">NOT NULL</span>,
+  url         <span class="ty">text</span>        <span class="kw">NOT NULL</span>,
+  icon        <span class="ty">text</span>        <span class="kw">DEFAULT</span> <span class="st">'🔗'</span>,
+  sort_order  <span class="ty">integer</span>     <span class="kw">DEFAULT</span> 0,
+  is_active   <span class="ty">boolean</span>     <span class="kw">DEFAULT</span> <span class="st">true</span>,
+  created_at  <span class="ty">timestamptz</span> <span class="kw">DEFAULT</span> now()
+);
+
+<span class="cm">-- Index untuk performa sorting</span>
+<span class="kw">CREATE INDEX IF NOT EXISTS</span> link_hub_sort_idx
+  <span class="kw">ON</span> link_hub (sort_order <span class="kw">ASC</span>);
+
+<span class="cm">-- RLS: izinkan semua baca (publik)</span>
+<span class="kw">ALTER TABLE</span> link_hub <span class="kw">ENABLE ROW LEVEL SECURITY</span>;
+
+<span class="kw">CREATE POLICY</span> <span class="st">"Public read link_hub"</span>
+  <span class="kw">ON</span> link_hub <span class="kw">FOR SELECT USING</span> (<span class="st">true</span>);
+
+<span class="kw">CREATE POLICY</span> <span class="st">"Auth write link_hub"</span>
+  <span class="kw">ON</span> link_hub <span class="kw">FOR ALL</span>
+  <span class="kw">USING</span> (auth.role() = <span class="st">'authenticated'</span>)
+  <span class="kw">WITH CHECK</span> (auth.role() = <span class="st">'authenticated'</span>);
+
+<span class="cm">-- Data contoh (opsional, hapus jika tidak perlu)</span>
+<span class="kw">INSERT INTO</span> link_hub (name, url, icon, sort_order) <span class="kw">VALUES</span>
+  (<span class="st">'GitHub'</span>, <span class="st">'https://github.com'</span>, <span class="st">'🐙'</span>, 1),
+  (<span class="st">'WhatsApp'</span>, <span class="st">'https://wa.me'</span>, <span class="st">'💬'</span>, 2),
+  (<span class="st">'LinkedIn'</span>, <span class="st">'https://linkedin.com'</span>, <span class="st">'💼'</span>, 3);
+          </div>
+        </div>
+
       </div>
 
     </div>
-
   </div>
 
 </div>
 
-<!-- ═══ TOAST ════════════════════════════════════════════ -->
+<!-- ═══ TOAST ════ -->
 <div id="toast"></div>
 
-<!-- ═══ CONFIRM DIALOG ════════════════════════════════════════════ -->
+<!-- ═══ CONFIRM DIALOG ════ -->
 <div class="confirm-overlay hidden" id="confirmOverlay">
   <div class="confirm-box">
     <div class="emoji">⚠️</div>
@@ -823,7 +634,7 @@
   </div>
 </div>
 
-<!-- ═══ GENERIC MODAL ════════════════════════════════════════════ -->
+<!-- ═══ GENERIC MODAL ════ -->
 <div class="modal-backdrop hidden" id="modalBackdrop">
   <div class="modal" id="modalBox">
     <div class="modal__head">
@@ -846,8 +657,8 @@ const SUPABASE_ANON = 'sb_publishable__uPzfujCdOFFN5Y_WP10Mw_WrjR2bSC';
 let currentSession = null;
 let currentUser = null;
 
-// ════ EMOJI LIST for picker ════
-const emojiList = ['⚡', '📦', '🛠️', '📝', '💬', '🏆', '🚀', '💡', '🎯', '⭐', '🔥', '✨', '🎨', '📊', '💻', '🌐', '📱', '🎪', '📸', '🎬', '📚', '📖', '✍️', '📄', '🗂️', '🔐', '🔑', '🔔', '📧', '💌', '📬', '📭', '📮', '🗃️', '📇', '📈', '📉', '💹', '💱', '💲', '💰', '🏦', '🏪', '🏬', '💳', '🎁', '🎀', '🎈', '🎉', '🎊', '🎂', '🍰', '🧁', '🍪', '🍩', '🍫', '🍬', '🍭', '🍮', '🍯', '🍼'];
+// ════ EMOJI LIST ════
+const emojiList = ['⚡','📦','🛠️','📝','💬','🏆','🚀','💡','🎯','⭐','🔥','✨','🎨','📊','💻','🌐','📱','🎪','📸','🎬','📚','📖','✍️','📄','🗂️','🔐','🔑','🔔','📧','💌','📬','📭','📮','🗃️','📇','📈','📉','💹','💱','💲','💰','🏦','🏪','🏬','💳','🎁','🎀','🎈','🎉','🎊','🎂','🍰','🧁','🍪','🍩','🍫','🍬','🍭','🍮','🍯','🍼'];
 
 // ════ HELPERS ════
 function v(id) { return document.getElementById(id)?.value || ''; }
@@ -860,7 +671,7 @@ function toast(msg, type = 'default') {
   t._timer = setTimeout(() => t.className = '', 3000);
 }
 
-function confirm(title, desc) {
+function confirmDialog(title, desc) {
   return new Promise(resolve => {
     document.getElementById('confirmTitle').textContent = title;
     document.getElementById('confirmDesc').textContent = desc;
@@ -895,21 +706,12 @@ function activatePanel(name) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById(`panel-${name}`)?.classList.add('active');
   document.querySelector(`.nav-item[data-panel="${name}"]`)?.classList.add('active');
-  const titles = {
-    dashboard: 'Dashboard', skills: 'Skills', projects: 'Proyek', services: 'Layanan',
-    blog: 'Blog', messages: 'Pesan Masuk', settings: 'Pengaturan'
-  };
+  const titles = { dashboard: 'Dashboard', skills: 'Skills', projects: 'Proyek', services: 'Layanan', blog: 'Blog', messages: 'Pesan Masuk', settings: 'Pengaturan' };
   document.getElementById('topbarTitle').textContent = titles[name] || name;
-  const loaders = {
-    skills: loadSkills, projects: loadProjects, services: loadServices,
-    blog: loadBlog, messages: loadMessages, dashboard: loadDashboard
-  };
+  const loaders = { skills: loadSkills, projects: loadProjects, services: loadServices, blog: loadBlog, messages: loadMessages, dashboard: loadDashboard, settings: loadLinkHubList };
   if (loaders[name]) loaders[name]();
 }
-
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.onclick = () => activatePanel(item.dataset.panel);
-});
+document.querySelectorAll('.nav-item').forEach(item => { item.onclick = () => activatePanel(item.dataset.panel); });
 
 // ════ AUTH ════
 async function bootstrapAuth() {
@@ -917,13 +719,7 @@ async function bootstrapAuth() {
   const email = localStorage.getItem('sb_admin_email');
   if (!token) return false;
   try {
-    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
-      headers: {
-        'apikey': SUPABASE_ANON,
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      }
-    });
+    const res = await fetch(`${SUPABASE_URL}/auth/v1/user`, { headers: { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' } });
     if (!res.ok) throw new Error('Session not valid');
     currentSession = token;
     currentUser = await res.json();
@@ -934,41 +730,24 @@ async function bootstrapAuth() {
     loadDashboard();
     return true;
   } catch (e) {
-    currentSession = null;
-    currentUser = null;
+    currentSession = null; currentUser = null;
     localStorage.removeItem('sb_admin_access_token');
     localStorage.removeItem('sb_admin_email');
     return false;
   }
 }
 
-// ════ SUPABASE REST HELPER ════
+// ════ SUPABASE REST ════
 async function sb(table, method = 'GET', body = null, query = '') {
-  const headers = {
-    'apikey': SUPABASE_ANON,
-    'Authorization': `Bearer ${currentSession || SUPABASE_ANON}`,
-    'Content-Type': 'application/json',
-    'Prefer': method === 'POST' ? 'return=representation' : 'return=representation'
-  };
-  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}${query}`, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : null
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.message || res.statusText);
-  }
+  const headers = { 'apikey': SUPABASE_ANON, 'Authorization': `Bearer ${currentSession || SUPABASE_ANON}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${table}${query}`, { method, headers, body: body ? JSON.stringify(body) : null });
+  if (!res.ok) { const err = await res.json().catch(() => ({})); throw new Error(err.message || res.statusText); }
   return res.status === 204 ? null : res.json();
 }
 
 // ════ AUTH UI ════
 async function signIn(email, pass) {
-  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-    method: 'POST',
-    headers: { 'apikey': SUPABASE_ANON, 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password: pass })
-  });
+  const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, { method: 'POST', headers: { 'apikey': SUPABASE_ANON, 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password: pass }) });
   const data = await res.json();
   if (!res.ok) throw new Error(data.error_description || data.msg || 'Login gagal');
   return data;
@@ -982,8 +761,7 @@ document.getElementById('loginBtn').onclick = async () => {
   document.getElementById('loginBtn').textContent = 'Memuat...';
   try {
     const data = await signIn(email, pass);
-    currentSession = data.access_token;
-    currentUser = data.user;
+    currentSession = data.access_token; currentUser = data.user;
     localStorage.setItem('sb_admin_access_token', currentSession);
     localStorage.setItem('sb_admin_email', email);
     document.getElementById('adminEmail').textContent = email;
@@ -991,20 +769,11 @@ document.getElementById('loginBtn').onclick = async () => {
     document.getElementById('loginScreen').classList.add('hidden');
     document.getElementById('adminApp').classList.add('visible');
     loadDashboard();
-  } catch (e) {
-    errEl.textContent = e.message;
-    errEl.classList.add('show');
-    document.getElementById('loginBtn').textContent = 'MASUK';
-  }
+  } catch (e) { errEl.textContent = e.message; errEl.classList.add('show'); document.getElementById('loginBtn').textContent = 'MASUK'; }
 };
-
-document.getElementById('loginPass').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('loginBtn').click();
-});
-
+document.getElementById('loginPass').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('loginBtn').click(); });
 document.getElementById('logoutBtn').onclick = () => {
-  currentSession = null;
-  currentUser = null;
+  currentSession = null; currentUser = null;
   document.getElementById('adminApp').classList.remove('visible');
   document.getElementById('loginScreen').classList.remove('hidden');
   document.getElementById('loginBtn').textContent = 'MASUK';
@@ -1014,19 +783,11 @@ document.getElementById('logoutBtn').onclick = () => {
 
 // ════ EMOJI PICKER HELPER ════
 function createEmojiPickerHtml(currentEmoji = '📝', inputId = 'fEmoji') {
-  let html = `<div class="emoji-picker-wrap">`;
-  html += `<div class="emoji-picker-grid" id="${inputId}Grid">`;
-  emojiList.forEach(e => {
-    html += `<button type="button" class="emoji-picker-btn${e === currentEmoji ? ' active' : ''}" onclick="setEmoji(this, '${inputId}')" title="${e}">${e}</button>`;
-  });
-  html += `</div>`;
-  html += `<div class="form-group" style="margin-top:10px;">`;
-  html += `<label>Atau ketik manual:</label>`;
-  html += `<input type="text" id="${inputId}" value="${currentEmoji}" placeholder="📝" maxlength="2" />`;
-  html += `</div></div>`;
+  let html = `<div class="emoji-picker-wrap"><div class="emoji-picker-grid" id="${inputId}Grid">`;
+  emojiList.forEach(e => { html += `<button type="button" class="emoji-picker-btn${e === currentEmoji ? ' active' : ''}" onclick="setEmoji(this, '${inputId}')" title="${e}">${e}</button>`; });
+  html += `</div><div class="form-group" style="margin-top:10px;"><label>Atau ketik manual:</label><input type="text" id="${inputId}" value="${currentEmoji}" placeholder="📝" maxlength="2" /></div></div>`;
   return html;
 }
-
 function setEmoji(btn, inputId) {
   document.querySelectorAll(`#${inputId}Grid button`).forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
@@ -1036,23 +797,218 @@ function setEmoji(btn, inputId) {
 // ════ DASHBOARD ════
 async function loadDashboard() {
   try {
-    const [proj, blog, svc, skill, msg] = await Promise.all([
+    const [proj, blog, svc, skill, msg, links] = await Promise.all([
       sb('projects', 'GET', null, '?select=id'),
       sb('posts', 'GET', null, '?select=id'),
       sb('services', 'GET', null, '?select=id'),
       sb('skills', 'GET', null, '?select=id'),
-      sb('messages', 'GET', null, '?select=id,read')
-    ]).catch(() => [[], [], [], [], []]);
-    document.getElementById('stat-proj').textContent = (proj || []).length;
-    document.getElementById('stat-blog').textContent = (blog || []).length;
-    document.getElementById('stat-svc').textContent = (svc || []).length;
-    document.getElementById('stat-skill').textContent = (skill || []).length;
-    document.getElementById('stat-msg').textContent = (msg || []).length;
-    const unread = (msg || []).filter(m => !m.read).length;
+      sb('messages', 'GET', null, '?select=id,read'),
+      sb('link_hub', 'GET', null, '?select=id&is_active=eq.true')
+    ]).catch(() => [[],[],[],[],[],[]]);
+    document.getElementById('stat-proj').textContent = (proj||[]).length;
+    document.getElementById('stat-blog').textContent = (blog||[]).length;
+    document.getElementById('stat-svc').textContent = (svc||[]).length;
+    document.getElementById('stat-skill').textContent = (skill||[]).length;
+    document.getElementById('stat-msg').textContent = (msg||[]).length;
+    document.getElementById('stat-links').textContent = (links||[]).length;
+    const unread = (msg||[]).filter(m => !m.read).length;
     const badge = document.getElementById('msgBadge');
-    if (unread > 0) { badge.textContent = unread; badge.style.display = 'inline'; }
-    else badge.style.display = 'none';
+    if (unread > 0) { badge.textContent = unread; badge.style.display = 'inline'; } else badge.style.display = 'none';
   } catch(e) { console.error('Dashboard load error:', e); }
+  loadDashLinkHub();
+}
+
+// ════ LINK HUB — DASHBOARD CARDS ════
+async function loadDashLinkHub() {
+  const grid = document.getElementById('dashLinkhubGrid');
+  grid.innerHTML = '<div class="loading-rows" style="grid-column:1/-1"><div class="loading-row"></div></div>';
+  try {
+    const rows = await sb('link_hub', 'GET', null, '?is_active=eq.true&order=sort_order.asc');
+    if (!rows?.length) {
+      grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="emoji">🔗</div><p>Belum ada link. <a href="#" onclick="activatePanel('settings')" style="color:var(--red);">Tambah di Pengaturan →</a></p></div>`;
+      return;
+    }
+    grid.innerHTML = rows.map(r => {
+      const isUrl = r.icon && (r.icon.startsWith('http') || r.icon.startsWith('/'));
+      const iconHtml = isUrl
+        ? `<img src="${r.icon}" alt="${r.name}" onerror="this.parentNode.textContent='🔗'" />`
+        : (r.icon || '🔗');
+      const displayUrl = r.url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+      return `
+        <a class="link-card" href="${r.url}" target="_blank" rel="noopener">
+          <div class="link-card__icon">${iconHtml}</div>
+          <div class="link-card__body">
+            <div class="link-card__name">${r.name}</div>
+            <div class="link-card__url">${displayUrl}</div>
+          </div>
+          <div class="link-card__arrow">↗</div>
+        </a>
+      `;
+    }).join('');
+  } catch(e) {
+    grid.innerHTML = `<div style="color:var(--danger);padding:16px;grid-column:1/-1;">Error: ${e.message} — pastikan tabel link_hub sudah dibuat.</div>`;
+  }
+}
+
+// ════ LINK HUB — SETTINGS FORM ════
+function updateIconPreview() {
+  const val = document.getElementById('lhIcon').value.trim();
+  const box = document.getElementById('lhIconPreview');
+  if (val.startsWith('http') || val.startsWith('/')) {
+    box.innerHTML = `<img src="${val}" alt="icon" onerror="this.parentNode.textContent='❌'" />`;
+  } else {
+    box.textContent = val || '🔗';
+  }
+}
+
+function setLhEmoji(emoji) {
+  document.getElementById('lhIcon').value = emoji;
+  updateIconPreview();
+}
+
+function resetLhForm() {
+  document.getElementById('lhEditId').value = '';
+  document.getElementById('lhName').value = '';
+  document.getElementById('lhUrl').value = '';
+  document.getElementById('lhIcon').value = '🔗';
+  document.getElementById('lhSort').value = '0';
+  document.getElementById('lhIconPreview').textContent = '🔗';
+  document.getElementById('lhFormTitle').innerHTML = 'Tambah <span>Link Baru</span>';
+  document.getElementById('lhSaveBtn').textContent = '💾 Simpan Link';
+  document.getElementById('lhCancelBtn').style.display = 'none';
+}
+
+function editLinkHub(r) {
+  document.getElementById('lhEditId').value = r.id;
+  document.getElementById('lhName').value = r.name || '';
+  document.getElementById('lhUrl').value = r.url || '';
+  document.getElementById('lhIcon').value = r.icon || '🔗';
+  document.getElementById('lhSort').value = r.sort_order || 0;
+  updateIconPreview();
+  document.getElementById('lhFormTitle').innerHTML = 'Edit <span>Link</span>';
+  document.getElementById('lhSaveBtn').textContent = '✏️ Update Link';
+  document.getElementById('lhCancelBtn').style.display = 'inline-flex';
+  // scroll to form
+  document.getElementById('lhForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+async function saveLinkHub() {
+  const editId = v('lhEditId');
+  const name = v('lhName').trim();
+  const url = v('lhUrl').trim();
+  const icon = v('lhIcon').trim() || '🔗';
+  const sort_order = parseInt(v('lhSort')) || 0;
+  if (!name) { toast('Nama link wajib diisi!', 'error'); return; }
+  if (!url) { toast('URL wajib diisi!', 'error'); return; }
+  const btn = document.getElementById('lhSaveBtn');
+  btn.textContent = 'Menyimpan...';
+  btn.disabled = true;
+  try {
+    if (editId) {
+      await sb(`link_hub?id=eq.${editId}`, 'PATCH', { name, url, icon, sort_order });
+      toast('Link diperbarui!', 'success');
+    } else {
+      await sb('link_hub', 'POST', { name, url, icon, sort_order, is_active: true });
+      toast('Link ditambahkan!', 'success');
+    }
+    resetLhForm();
+    loadLinkHubList();
+    loadDashLinkHub();
+    document.getElementById('stat-links').textContent = '↻';
+    loadDashboard();
+  } catch(e) {
+    toast(e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = editId ? '✏️ Update Link' : '💾 Simpan Link';
+  }
+}
+
+async function loadLinkHubList() {
+  const container = document.getElementById('lhListContainer');
+  if (!container) return;
+  container.innerHTML = '<div class="loading-rows"><div class="loading-row"></div><div class="loading-row"></div></div>';
+  try {
+    const rows = await sb('link_hub', 'GET', null, '?order=sort_order.asc');
+    if (!rows?.length) {
+      container.innerHTML = '<div class="empty-state"><div class="emoji">🔗</div><p>Belum ada link. Isi form di sebelah kiri.</p></div>';
+      return;
+    }
+    container.innerHTML = `
+      <div class="table-card" style="box-shadow:none;">
+        <table>
+          <thead><tr><th>Icon</th><th>Nama</th><th>URL</th><th>#</th><th>Aksi</th></tr></thead>
+          <tbody>
+            ${rows.map(r => {
+              const isUrl = r.icon && (r.icon.startsWith('http') || r.icon.startsWith('/'));
+              const iconHtml = isUrl
+                ? `<img src="${r.icon}" style="width:24px;height:24px;object-fit:contain;border-radius:4px;" onerror="this.style.display='none'" />`
+                : `<span style="font-size:1.3rem;">${r.icon || '🔗'}</span>`;
+              const shortUrl = r.url.replace(/^https?:\/\/(www\.)?/,'').split('/')[0];
+              return `
+                <tr>
+                  <td style="width:40px;text-align:center;">${iconHtml}</td>
+                  <td><strong style="font-size:.88rem;">${r.name}</strong></td>
+                  <td><a href="${r.url}" target="_blank" style="color:var(--red);font-size:.75rem;">${shortUrl}</a></td>
+                  <td style="color:var(--gray-500);font-size:.8rem;">${r.sort_order}</td>
+                  <td>
+                    <div class="actions">
+                      <button class="btn-sm btn-edit" onclick='editLinkHub(${JSON.stringify(r).replace(/'/g,"&apos;")})'>✏️</button>
+                      <button class="btn-sm btn-del" onclick="deleteLinkHub('${r.id}','${r.name.replace(/'/g,"\\'")}')">🗑️</button>
+                    </div>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    `;
+  } catch(e) {
+    container.innerHTML = `<div style="color:var(--danger);padding:16px;font-size:.85rem;">Error: ${e.message}<br><small>Pastikan tabel <code>link_hub</code> sudah dibuat via SQL Editor.</small></div>`;
+  }
+}
+
+async function deleteLinkHub(id, name) {
+  if (!await confirmDialog(`Hapus link "${name}"?`, 'Link akan dihapus permanen dari database.')) return;
+  try {
+    await sb(`link_hub?id=eq.${id}`, 'DELETE');
+    toast('Link dihapus.', 'default');
+    loadLinkHubList();
+    loadDashLinkHub();
+    loadDashboard();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+// ════ SQL COPY ════
+function copySql() {
+  const sqlText = `CREATE TABLE IF NOT EXISTS link_hub (
+  id          uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
+  name        text        NOT NULL,
+  url         text        NOT NULL,
+  icon        text        DEFAULT '🔗',
+  sort_order  integer     DEFAULT 0,
+  is_active   boolean     DEFAULT true,
+  created_at  timestamptz DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS link_hub_sort_idx ON link_hub (sort_order ASC);
+
+ALTER TABLE link_hub ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Public read link_hub"
+  ON link_hub FOR SELECT USING (true);
+
+CREATE POLICY "Auth write link_hub"
+  ON link_hub FOR ALL
+  USING (auth.role() = 'authenticated')
+  WITH CHECK (auth.role() = 'authenticated');
+
+INSERT INTO link_hub (name, url, icon, sort_order) VALUES
+  ('GitHub', 'https://github.com', '🐙', 1),
+  ('WhatsApp', 'https://wa.me', '💬', 2),
+  ('LinkedIn', 'https://linkedin.com', '💼', 3);`;
+  navigator.clipboard.writeText(sqlText).then(() => toast('SQL disalin!', 'success')).catch(() => toast('Gagal menyalin', 'error'));
 }
 
 // ════ SKILLS ════
@@ -1107,7 +1063,7 @@ function editSkill(r) {
 }
 
 async function deleteSkill(id) {
-  if (!await confirm('Hapus skill?', 'Tindakan ini tidak bisa dibatalkan.')) return;
+  if (!await confirmDialog('Hapus skill?', 'Tindakan ini tidak bisa dibatalkan.')) return;
   try { await sb(`skills?id=eq.${id}`, 'DELETE'); toast('Skill dihapus.'); loadSkills(); }
   catch(e) { toast(e.message, 'error'); }
 }
@@ -1167,7 +1123,7 @@ function editProject(r) {
 }
 
 async function deleteProject(id) {
-  if (!await confirm('Hapus proyek?', 'Data proyek akan dihapus permanen.')) return;
+  if (!await confirmDialog('Hapus proyek?', 'Data proyek akan dihapus permanen.')) return;
   try { await sb(`projects?id=eq.${id}`, 'DELETE'); toast('Proyek dihapus.'); loadProjects(); }
   catch(e) { toast(e.message, 'error'); }
 }
@@ -1226,7 +1182,7 @@ function editService(r) {
 }
 
 async function deleteService(id) {
-  if (!await confirm('Hapus layanan?', 'Tindakan ini tidak bisa dibatalkan.')) return;
+  if (!await confirmDialog('Hapus layanan?', 'Tindakan ini tidak bisa dibatalkan.')) return;
   try { await sb(`services?id=eq.${id}`, 'DELETE'); toast('Layanan dihapus.'); loadServices(); }
   catch(e) { toast(e.message, 'error'); }
 }
@@ -1265,7 +1221,7 @@ function blogForm(r = {}) {
     <div class="form-group"><label>Ringkasan (Preview)</label><textarea id="fSummary" style="min-height:60px;">${r.summary || ''}</textarea></div>
     <div class="form-group"><label>Konten Lengkap</label><textarea id="fContent" style="min-height:150px;">${r.content || ''}</textarea></div>
     <div class="form-row">
-      <div class="form-group"><label>Author</label><input id="fAuthor" value="${r.author || 'Dede Suparman'}" placeholder="Dede Suparman" /></div>
+      <div class="form-group"><label>Author</label><input id="fAuthor" value="${r.author || 'Dede Suparman'}" /></div>
       <div class="form-group"><label>Emoji</label>${createEmojiPickerHtml(currEmoji, 'fEmoji')}</div>
     </div>
     <div class="form-group">
@@ -1280,16 +1236,7 @@ function blogForm(r = {}) {
 document.getElementById('addPostBtn').onclick = () => openModal('Buat Blog Post Baru', blogForm(), async () => {
   const slug = (v('fSlug') || v('fTitle').toLowerCase().replace(/[^a-z0-9]+/g, '-')).replace(/^-|-$/g, '');
   if (!v('fTitle') || !slug) { toast('Judul dan slug tidak boleh kosong', 'error'); return; }
-  const data = {
-    title: v('fTitle'),
-    slug: slug,
-    summary: v('fSummary'),
-    content: v('fContent'),
-    author: v('fAuthor'),
-    emoji: v('fEmoji'),
-    published: document.getElementById('fPublished').checked,
-    published_at: document.getElementById('fPublished').checked ? new Date().toISOString() : null
-  };
+  const data = { title: v('fTitle'), slug, summary: v('fSummary'), content: v('fContent'), author: v('fAuthor'), emoji: v('fEmoji'), published: document.getElementById('fPublished').checked, published_at: document.getElementById('fPublished').checked ? new Date().toISOString() : null };
   try { await sb('posts', 'POST', data); toast('Blog post dibuat!', 'success'); closeModal(); loadBlog(); loadDashboard(); }
   catch(e) { toast(e.message, 'error'); }
 });
@@ -1297,23 +1244,14 @@ document.getElementById('addPostBtn').onclick = () => openModal('Buat Blog Post 
 function editPost(r) {
   openModal('Edit Blog Post', blogForm(r), async () => {
     const slug = (v('fSlug') || v('fTitle').toLowerCase().replace(/[^a-z0-9]+/g, '-')).replace(/^-|-$/g, '');
-    const data = {
-      title: v('fTitle'),
-      slug: slug,
-      summary: v('fSummary'),
-      content: v('fContent'),
-      author: v('fAuthor'),
-      emoji: v('fEmoji'),
-      published: document.getElementById('fPublished').checked,
-      published_at: document.getElementById('fPublished').checked ? (r.published_at || new Date().toISOString()) : null
-    };
+    const data = { title: v('fTitle'), slug, summary: v('fSummary'), content: v('fContent'), author: v('fAuthor'), emoji: v('fEmoji'), published: document.getElementById('fPublished').checked, published_at: document.getElementById('fPublished').checked ? (r.published_at || new Date().toISOString()) : null };
     try { await sb(`posts?id=eq.${r.id}`, 'PATCH', data); toast('Blog post diperbarui!', 'success'); closeModal(); loadBlog(); loadDashboard(); }
     catch(e) { toast(e.message, 'error'); }
   });
 }
 
 async function deletePost(id) {
-  if (!await confirm('Hapus blog post?', 'Konten blog akan dihapus permanen.')) return;
+  if (!await confirmDialog('Hapus blog post?', 'Konten blog akan dihapus permanen.')) return;
   try { await sb(`posts?id=eq.${id}`, 'DELETE'); toast('Blog post dihapus.'); loadBlog(); loadDashboard(); }
   catch(e) { toast(e.message, 'error'); }
 }
@@ -1328,13 +1266,13 @@ async function loadMessages() {
     container.innerHTML = rows.map(m => {
       const date = new Date(m.created_at).toLocaleDateString('id-ID');
       return `
-        <div class="message-card ${!m.read ? 'unread' : ''}" style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;margin-bottom:12px;border-left:3px solid ${!m.read ? 'var(--red)' : 'var(--gray-100)'};transition:border-color .2s;">
+        <div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;margin-bottom:12px;border-left:3px solid ${!m.read ? 'var(--red)' : 'var(--gray-100)'};">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <strong style="font-size:.95rem;">${m.name}</strong>
+            <strong>${m.name}</strong>
             ${!m.read ? '<span style="background:var(--red);color:var(--white);font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase;">Baru</span>' : ''}
           </div>
           <div style="font-size:.8rem;color:var(--gray-500);margin-bottom:8px;">${m.email} • ${date}</div>
-          ${m.subject ? `<div style="font-weight:600;font-size:.85rem;margin-bottom:6px;color:var(--gray-700);">${m.subject}</div>` : ''}
+          ${m.subject ? `<div style="font-weight:600;font-size:.85rem;margin-bottom:6px;">${m.subject}</div>` : ''}
           <p style="font-size:.88rem;color:var(--gray-500);line-height:1.55;margin:0;">${m.message.substring(0, 150)}${m.message.length > 150 ? '...' : ''}</p>
         </div>
       `;
@@ -1345,13 +1283,10 @@ async function loadMessages() {
 document.getElementById('markAllReadBtn').onclick = async () => {
   try {
     const msgs = await sb('messages', 'GET', null, '?select=id');
-    if (!msgs?.length) { toast('Tidak ada pesan untuk ditandai.'); return; }
-    for (const m of msgs) {
-      await sb(`messages?id=eq.${m.id}`, 'PATCH', { read: true });
-    }
+    if (!msgs?.length) { toast('Tidak ada pesan.'); return; }
+    for (const m of msgs) await sb(`messages?id=eq.${m.id}`, 'PATCH', { read: true });
     toast('Semua pesan ditandai dibaca!', 'success');
-    loadMessages();
-    loadDashboard();
+    loadMessages(); loadDashboard();
   } catch(e) { toast(e.message, 'error'); }
 };
 
@@ -1363,6 +1298,5 @@ bootstrapAuth().then(authed => {
   }
 });
 </script>
-
 </body>
 </html>
