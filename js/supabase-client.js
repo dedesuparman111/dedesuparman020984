@@ -68,6 +68,11 @@ async function loadPosts({ limit = 6 } = {}) {
   return supabaseFetch('posts', `select=*&order=published_at.desc&limit=${limit}&published=eq.true`);
 }
 
+/** Get all published blog posts (alias for loadPosts) */
+async function getPosts({ limit = 100 } = {}) {
+  return supabaseFetch('posts', `select=*&order=published_at.desc&limit=${limit}&published=eq.true`);
+}
+
 /** Load a single post by slug */
 async function loadPostBySlug(slug) {
   const rows = await supabaseFetch('posts', `select=*&slug=eq.${encodeURIComponent(slug)}&limit=1`);
@@ -93,6 +98,7 @@ async function loadSkills() {
 window.DB = {
   loadProjects,
   loadPosts,
+  getPosts,
   loadPostBySlug,
   sendContactMessage,
   loadServices,
