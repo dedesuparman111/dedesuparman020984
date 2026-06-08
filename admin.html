@@ -847,7 +847,7 @@ let currentSession = null;
 let currentUser = null;
 
 // ════ EMOJI LIST for picker ════
-const emojiList = ['⚡', '📦', '🛠️', '📝', '💬', '🏆', '🚀', '💡', '🎯', '⭐', '🔥', '✨', '🎨', '📊', '💻', '🌐', '📱', '🎪', '📸', '🎬', '📚', '📖', '✍️', '📄', '🗂️', '🔐', '🔑', '🔔', '📧', '💌', '📬', '📭', '📮', '🗃️', '📇', '📈', '📉', '💹', '💱', '💲', '💱', '💰', '🏦', '🏪', '🏬', '💳', '🎁', '🎀', '🎈', '🎉', '🎊', '🎂', '🍰', '🧁', '🍪', '🍩', '🍫', '🍬', '🍭', '🍮', '🍯', '🍼'];
+const emojiList = ['⚡', '📦', '🛠️', '📝', '💬', '🏆', '🚀', '💡', '🎯', '⭐', '🔥', '✨', '🎨', '📊', '💻', '🌐', '📱', '🎪', '📸', '🎬', '📚', '📖', '✍️', '📄', '🗂️', '🔐', '🔑', '🔔', '📧', '💌', '📬', '📭', '📮', '🗃️', '📇', '📈', '📉', '💹', '💱', '💲', '💰', '🏦', '🏪', '🏬', '💳', '🎁', '🎀', '🎈', '🎉', '🎊', '🎂', '🍰', '🧁', '🍪', '🍩', '🍫', '🍬', '🍭', '🍮', '🍯', '🍼'];
 
 // ════ HELPERS ════
 function v(id) { return document.getElementById(id)?.value || ''; }
@@ -1013,23 +1013,17 @@ document.getElementById('logoutBtn').onclick = () => {
 };
 
 // ════ EMOJI PICKER HELPER ════
-function createEmojiPickerHtml(currentEmoji = '⚡', inputId = 'fEmoji') {
-  let html = `
-    <div class="emoji-picker-wrap">
-      <input type="text" id="${inputId}Search" class="emoji-picker-search" placeholder="Cari atau ketik emoji..." />
-      <div class="emoji-picker-grid" id="${inputId}Grid">
-  `;
+function createEmojiPickerHtml(currentEmoji = '📝', inputId = 'fEmoji') {
+  let html = `<div class="emoji-picker-wrap">`;
+  html += `<div class="emoji-picker-grid" id="${inputId}Grid">`;
   emojiList.forEach(e => {
-    html += `<button type="button" class="emoji-picker-btn${e === currentEmoji ? ' active' : ''}" onclick="setEmoji(this, '${inputId}')">${e}</button>`;
+    html += `<button type="button" class="emoji-picker-btn${e === currentEmoji ? ' active' : ''}" onclick="setEmoji(this, '${inputId}')" title="${e}">${e}</button>`;
   });
-  html += `
-      </div>
-      <div class="form-group" style="margin-top:10px;">
-        <label>Atau ketik manual:</label>
-        <input type="text" id="${inputId}" value="${currentEmoji}" placeholder="⚡" maxlength="2" />
-      </div>
-    </div>
-  `;
+  html += `</div>`;
+  html += `<div class="form-group" style="margin-top:10px;">`;
+  html += `<label>Atau ketik manual:</label>`;
+  html += `<input type="text" id="${inputId}" value="${currentEmoji}" placeholder="📝" maxlength="2" />`;
+  html += `</div></div>`;
   return html;
 }
 
@@ -1058,7 +1052,7 @@ async function loadDashboard() {
     const badge = document.getElementById('msgBadge');
     if (unread > 0) { badge.textContent = unread; badge.style.display = 'inline'; }
     else badge.style.display = 'none';
-  } catch(e) { /* stats optional */ }
+  } catch(e) { console.error('Dashboard load error:', e); }
 }
 
 // ════ SKILLS ════
@@ -1242,46 +1236,50 @@ async function loadBlog() {
   const tbody = document.getElementById('blogTableBody');
   tbody.innerHTML = '<tr><td colspan="6"><div class="loading-rows"><div class="loading-row"></div></div></td></tr>';
   try {
-    const rows = await sb('posts', 'GET', null, '?order=published_at.desc');
+    const rows = await sb('posts', 'GET', null, '?order=published_at.desc.nullsfirst');
     if (!rows?.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="emoji">📝</div><p>Belum ada blog post.</p></div></td></tr>'; return; }
-    tbody.innerHTML = rows.map(r => `
-      <tr>
-        <td class="emoji-cell">${r.emoji || '📝'}</td>
-        <td><strong>${r.title}</strong></td>
-        <td><code style="font-size:.75rem;">${r.slug}</code></td>
-        <td><span class="status-dot ${r.published ? 'published' : 'draft'}"></span>${r.published ? 'Dipublikasi' : 'Draft'}</td>
-        <td style="font-size:.8rem;">${new Date(r.published_at || r.created_at).toLocaleDateString('id-ID')}</td>
-        <td><div class="actions">
-          <button class="btn-sm btn-edit" onclick="editPost(${JSON.stringify(r).replace(/"/g, '&quot;')})">✏️ Edit</button>
-          <button class="btn-sm btn-del" onclick="deletePost('${r.id}')">🗑️</button>
-        </div></td>
-      </tr>
-    `).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);padding:16px;">${e.message}</td></tr>`; }
+    tbody.innerHTML = rows.map(r => {
+      const date = new Date(r.published_at || r.created_at).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' });
+      return `
+        <tr>
+          <td class="emoji-cell">${r.emoji || '📝'}</td>
+          <td><strong>${r.title}</strong></td>
+          <td><code style="font-size:.75rem;background:var(--gray-50);padding:2px 6px;border-radius:4px;">${r.slug}</code></td>
+          <td><span class="status-dot ${r.published ? 'published' : 'draft'}"></span><span style="font-size:.8rem;">${r.published ? 'Dipublikasi' : 'Draft'}</span></td>
+          <td style="font-size:.8rem;color:var(--gray-500);">${date}</td>
+          <td><div class="actions">
+            <button class="btn-sm btn-edit" onclick="editPost(${JSON.stringify(r).replace(/"/g, '&quot;')})">✏️</button>
+            <button class="btn-sm btn-del" onclick="deletePost('${r.id}')">🗑️</button>
+          </div></td>
+        </tr>
+      `;
+    }).join('');
+  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);padding:16px;"><strong>Error:</strong> ${e.message}</td></tr>`; }
 }
 
 function blogForm(r = {}) {
   const currEmoji = r.emoji || '📝';
   return `
-    <div class="form-group"><label>Judul Blog</label><input id="fTitle" value="${r.title || ''}" placeholder="Judul Post" /></div>
-    <div class="form-group"><label>Slug</label><input id="fSlug" value="${r.slug || ''}" placeholder="url-friendly-slug" /><div class="hint">Otomatis dibuat dari judul jika kosong</div></div>
-    <div class="form-group"><label>Ringkasan</label><textarea id="fSummary" style="min-height:60px;">${r.summary || ''}</textarea></div>
+    <div class="form-group"><label>Judul Blog</label><input id="fTitle" value="${r.title || ''}" placeholder="Judul Post Menarik" /></div>
+    <div class="form-group"><label>Slug</label><input id="fSlug" value="${r.slug || ''}" placeholder="judul-post-menarik" /><div class="hint">Otomatis dibuat dari judul jika kosong</div></div>
+    <div class="form-group"><label>Ringkasan (Preview)</label><textarea id="fSummary" style="min-height:60px;">${r.summary || ''}</textarea></div>
     <div class="form-group"><label>Konten Lengkap</label><textarea id="fContent" style="min-height:150px;">${r.content || ''}</textarea></div>
     <div class="form-row">
       <div class="form-group"><label>Author</label><input id="fAuthor" value="${r.author || 'Dede Suparman'}" placeholder="Dede Suparman" /></div>
-      <div class="form-group"><label>Emoji Icon</label>${createEmojiPickerHtml(currEmoji, 'fEmoji')}</div>
+      <div class="form-group"><label>Emoji</label>${createEmojiPickerHtml(currEmoji, 'fEmoji')}</div>
     </div>
     <div class="form-group">
-      <label>
-        <input type="checkbox" id="fPublished" ${r.published ? 'checked' : ''} />
-        <span style="margin-left:6px;">Publikasikan sekarang</span>
+      <label style="display:flex;align-items:center;gap:8px;text-transform:none;font-weight:400;">
+        <input type="checkbox" id="fPublished" ${r.published ? 'checked' : ''} style="width:16px;height:16px;cursor:pointer;" />
+        <span>Publikasikan sekarang</span>
       </label>
     </div>
   `;
 }
 
-document.getElementById('addPostBtn').onclick = () => openModal('Buat Blog Post', blogForm(), async () => {
-  const slug = v('fSlug') || v('fTitle').toLowerCase().replace(/\s+/g, '-');
+document.getElementById('addPostBtn').onclick = () => openModal('Buat Blog Post Baru', blogForm(), async () => {
+  const slug = (v('fSlug') || v('fTitle').toLowerCase().replace(/[^a-z0-9]+/g, '-')).replace(/^-|-$/g, '');
+  if (!v('fTitle') || !slug) { toast('Judul dan slug tidak boleh kosong', 'error'); return; }
   const data = {
     title: v('fTitle'),
     slug: slug,
@@ -1292,13 +1290,13 @@ document.getElementById('addPostBtn').onclick = () => openModal('Buat Blog Post'
     published: document.getElementById('fPublished').checked,
     published_at: document.getElementById('fPublished').checked ? new Date().toISOString() : null
   };
-  try { await sb('posts', 'POST', data); toast('Blog post dibuat!', 'success'); closeModal(); loadBlog(); }
+  try { await sb('posts', 'POST', data); toast('Blog post dibuat!', 'success'); closeModal(); loadBlog(); loadDashboard(); }
   catch(e) { toast(e.message, 'error'); }
 });
 
 function editPost(r) {
   openModal('Edit Blog Post', blogForm(r), async () => {
-    const slug = v('fSlug') || v('fTitle').toLowerCase().replace(/\s+/g, '-');
+    const slug = (v('fSlug') || v('fTitle').toLowerCase().replace(/[^a-z0-9]+/g, '-')).replace(/^-|-$/g, '');
     const data = {
       title: v('fTitle'),
       slug: slug,
@@ -1307,16 +1305,16 @@ function editPost(r) {
       author: v('fAuthor'),
       emoji: v('fEmoji'),
       published: document.getElementById('fPublished').checked,
-      published_at: document.getElementById('fPublished').checked ? new Date().toISOString() : null
+      published_at: document.getElementById('fPublished').checked ? (r.published_at || new Date().toISOString()) : null
     };
-    try { await sb(`posts?id=eq.${r.id}`, 'PATCH', data); toast('Blog post diperbarui!', 'success'); closeModal(); loadBlog(); }
+    try { await sb(`posts?id=eq.${r.id}`, 'PATCH', data); toast('Blog post diperbarui!', 'success'); closeModal(); loadBlog(); loadDashboard(); }
     catch(e) { toast(e.message, 'error'); }
   });
 }
 
 async function deletePost(id) {
   if (!await confirm('Hapus blog post?', 'Konten blog akan dihapus permanen.')) return;
-  try { await sb(`posts?id=eq.${id}`, 'DELETE'); toast('Blog post dihapus.'); loadBlog(); }
+  try { await sb(`posts?id=eq.${id}`, 'DELETE'); toast('Blog post dihapus.'); loadBlog(); loadDashboard(); }
   catch(e) { toast(e.message, 'error'); }
 }
 
@@ -1327,24 +1325,28 @@ async function loadMessages() {
   try {
     const rows = await sb('messages', 'GET', null, '?order=created_at.desc');
     if (!rows?.length) { container.innerHTML = '<div class="empty-state"><div class="emoji">💬</div><p>Tidak ada pesan.</p></div>'; return; }
-    container.innerHTML = rows.map(m => `
-      <div class="message-card ${!m.read ? 'unread' : ''}">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <strong style="font-size:.95rem;">${m.name}</strong>
-          ${!m.read ? '<span class="unread-badge">Baru</span>' : ''}
+    container.innerHTML = rows.map(m => {
+      const date = new Date(m.created_at).toLocaleDateString('id-ID');
+      return `
+        <div class="message-card ${!m.read ? 'unread' : ''}" style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 20px;margin-bottom:12px;border-left:3px solid ${!m.read ? 'var(--red)' : 'var(--gray-100)'};transition:border-color .2s;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <strong style="font-size:.95rem;">${m.name}</strong>
+            ${!m.read ? '<span style="background:var(--red);color:var(--white);font-size:.65rem;font-weight:700;padding:2px 7px;border-radius:10px;text-transform:uppercase;">Baru</span>' : ''}
+          </div>
+          <div style="font-size:.8rem;color:var(--gray-500);margin-bottom:8px;">${m.email} • ${date}</div>
+          ${m.subject ? `<div style="font-weight:600;font-size:.85rem;margin-bottom:6px;color:var(--gray-700);">${m.subject}</div>` : ''}
+          <p style="font-size:.88rem;color:var(--gray-500);line-height:1.55;margin:0;">${m.message.substring(0, 150)}${m.message.length > 150 ? '...' : ''}</p>
         </div>
-        <div style="font-size:.8rem;color:var(--gray-500);margin-bottom:8px;">${m.email} • ${new Date(m.created_at).toLocaleDateString('id-ID')}</div>
-        ${m.subject ? `<div style="font-weight:600;font-size:.85rem;margin-bottom:6px;color:var(--gray-700);">${m.subject}</div>` : ''}
-        <p style="font-size:.88rem;color:var(--gray-500);line-height:1.55;">${m.message}</p>
-      </div>
-    `).join('');
-  } catch(e) { container.innerHTML = `<div style="color:var(--danger);padding:16px;">${e.message}</div>`; }
+      `;
+    }).join('');
+  } catch(e) { container.innerHTML = `<div style="color:var(--danger);padding:16px;"><strong>Error:</strong> ${e.message}</div>`; }
 }
 
 document.getElementById('markAllReadBtn').onclick = async () => {
   try {
     const msgs = await sb('messages', 'GET', null, '?select=id');
-    for (const m of msgs || []) {
+    if (!msgs?.length) { toast('Tidak ada pesan untuk ditandai.'); return; }
+    for (const m of msgs) {
       await sb(`messages?id=eq.${m.id}`, 'PATCH', { read: true });
     }
     toast('Semua pesan ditandai dibaca!', 'success');
