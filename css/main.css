@@ -5,8 +5,8 @@
 
 /* ── CSS VARIABLES ── */
 :root {
-  --red:        #E63946;
-  --red-dark:   #C1121F;
+  --red:        #1B9E5A; /* green primary */
+  --red-dark:   #137A45; /* darker green */
   --black:      #1A1A2E;
   --white:      #FFFFFF;
   --gray-50:    #F7F8FA;
