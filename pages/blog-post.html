@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog Post — Dede Suparman</title>
+  <meta name="description" content="Blog post dari Dede Suparman" />
+  
+  <link rel="stylesheet" href="../css/main.css" />
+  <link rel="stylesheet" href="../css/pages.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet" />
+  
+  <style>
+    .blog-post {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 3rem 1rem;
+    }
+    
+    .blog-post__header {
+      margin-bottom: 3rem;
+      text-align: center;
+    }
+    
+    .blog-post__emoji {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+    
+    .blog-post__title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+    
+    .blog-post__meta {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      font-size: 0.9rem;
+      color: var(--gray-600);
+      margin-bottom: 2rem;
+    }
+    
+    .blog-post__content {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--gray-700);
+    }
+    
+    .blog-post__content h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      color: var(--gray-900);
+    }
+    
+    .blog-post__content h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-top: 1.5rem;
+      margin-bottom: 0.75rem;
+      color: var(--gray-900);
+    }
+    
+    .blog-post__content p {
+      margin-bottom: 1rem;
+    }
+    
+    .blog-post__content ul,
+    .blog-post__content ol {
+      margin: 1rem 0 1rem 2rem;
+    }
+    
+    .blog-post__content li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .blog-post__content code {
+      background: var(--gray-100);
+      padding: 0.2rem 0.4rem;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9em;
+    }
+    
+    .blog-post__content pre {
+      background: var(--gray-900);
+      color: #fff;
+      padding: 1.5rem;
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 1.5rem 0;
+    }
+    
+    .blog-post__footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--gray-200);
+    }
+    
+    .blog-post__back {
+      display: inline-block;
+      margin-top: 2rem;
+    }
+    
+    .blog-loading {
+      text-align: center;
+      padding: 2rem;
+      color: var(--gray-600);
+    }
+    
+    .blog-error {
+      background: #fee;
+      border: 1px solid #fcc;
+      color: #c00;
+      padding: 1.5rem;
+      border-radius: 6px;
+      margin: 2rem auto;
+      max-width: 600px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body class="page-blog-post">
+  
+  <header class="navbar scrolled" id="navbar">
+    <div class="navbar__inner">
+      <a href="../index.html" class="navbar__logo">Dede Suparman</a>
+      <nav class="navbar__menu" id="navMenu">
+        <a href="../index.html" class="navbar__link">Home</a>
+        <a href="tentang.html" class="navbar__link">Tentang</a>
+        <a href="layanan.html" class="navbar__link">Layanan</a>
+        <a href="blog.html" class="navbar__link active">Blog</a>
+        <a href="kontak.html" class="navbar__link">Kontak</a>
+      </nav>
+      <button class="navbar__burger" id="burgerBtn"><span></span><span></span><span></span></button>
+    </div>
+  </header>
+
+  <main>
+    <div id="blogPostContainer" style="display:none;">
+      <div class="blog-post">
+        <div class="blog-post__header">
+          <div class="blog-post__emoji" id="postEmoji">📝</div>
+          <h1 class="blog-post__title" id="postTitle">Loading...</h1>
+          <div class="blog-post__meta">
+            <span id="postDate"></span>
+            <span id="postReadTime"></span>
+          </div>
+        </div>
+        
+        <article class="blog-post__content" id="postContent">
+          <!-- Content loaded here -->
+        </article>
+        
+        <div class="blog-post__footer">
+          <a href="blog.html" class="btn btn--outline blog-post__back">← Kembali ke Blog</a>
+        </div>
+      </div>
+    </div>
+
+    <div id="blogErrorContainer" style="display:none;">
+      <div class="blog-error">
+        <h2>Post Tidak Ditemukan</h2>
+        <p>Maaf, post yang Anda cari tidak tersedia atau belum dipublikasikan.</p>
+        <a href="blog.html" class="btn btn--outline blog-post__back">← Kembali ke Blog</a>
+      </div>
+    </div>
+
+    <div id="blogLoadingContainer" class="blog-loading">
+      <p>Loading...</p>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p class="footer__brand">Dede Suparman</p>
+      <p class="footer__copy">© <span id="year"></span> Dede Suparman.</p>
+      <nav class="footer__nav"><a href="kontak.html">Kontak</a></nav>
+    </div>
+  </footer>
+
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/main.js"></script>
+  <script>
+    /**
+     * Load and display a single blog post by slug
+     */
+    async function loadBlogPost() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const slug = urlParams.get('slug');
+      
+      const postContainer = document.getElementById('blogPostContainer');
+      const errorContainer = document.getElementById('blogErrorContainer');
+      const loadingContainer = document.getElementById('blogLoadingContainer');
+      
+      if (!slug) {
+        loadingContainer.style.display = 'none';
+        errorContainer.style.display = 'block';
+        return;
+      }
+      
+      try {
+        const post = await window.DB.loadPostBySlug(slug);
+        
+        if (!post) {
+          loadingContainer.style.display = 'none';
+          errorContainer.style.display = 'block';
+          return;
+        }
+        
+        // Populate post data
+        document.getElementById('postEmoji').textContent = post.cover_emoji || '📝';
+        document.getElementById('postTitle').textContent = post.title;
+        document.getElementById('postDate').textContent = new Date(post.published_at || post.created_at).toLocaleDateString('id-ID', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        });
+        
+        if (post.read_time) {
+          document.getElementById('postReadTime').textContent = `${post.read_time} min baca`;
+        } else {
+          document.getElementById('postReadTime').style.display = 'none';
+        }
+        
+        // Set page title
+        document.title = `${post.title} — Dede Suparman`;
+        
+        // Display content (assuming content is HTML)
+        const contentDiv = document.getElementById('postContent');
+        contentDiv.innerHTML = post.content;
+        
+        // Hide loading, show post
+        loadingContainer.style.display = 'none';
+        postContainer.style.display = 'block';
+        
+      } catch (error) {
+        console.error('Error loading blog post:', error);
+        loadingContainer.style.display = 'none';
+        errorContainer.style.display = 'block';
+      }
+    }
+    
+    // Load post when DOM is ready
+    document.addEventListener('DOMContentLoaded', loadBlogPost);
+  </script>
+</body>
+</html>
