@@ -1170,53 +1170,72 @@ async function loadSkills() {
   tbody.innerHTML = '<tr><td colspan="6"><div class="loading-rows"><div class="loading-row"></div></div></td></tr>';
   try {
     const rows = await sb('skills', 'GET', null, '?order=sort_order.asc');
-    if (!rows?.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="emoji">⚡</div><p>Belum ada skill.</p></div></td></tr>'; return; }
+    if (!rows?.length) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="emoji">⚡</div><p>Belum ada skill.</p></div></td></tr>';
+      return;
+    }
     tbody.innerHTML = rows.map(r => `
       <tr>
-        <td class="emoji-cell">${r.icon || '⚡'}</td>
-        <td><strong>${r.name}</strong></td>
-        <td><span class="tag-pill">${r.category || '–'}</span></td>
-        <td><div class="level-bar"><div class="level-bar__track"><div class="level-bar__fill" style="width:${r.level}%"></div></div><span style="font-size:.8rem;color:var(--gray-500)">${r.level}%</span></div></td>
-        <td>${r.sort_order}</td>
+        <td class="emoji-cell">${esc(r.icon) || '⚡'}</td>
+        <td><strong>${esc(r.name)}</strong></td>
+        <td><span class="tag-pill">${esc(r.category) || '–'}</span></td>
+        <td><div class="level-bar">
+          <div class="level-bar__track"><div class="level-bar__fill" style="width:${r.level || 0}%"></div></div>
+          <span style="font-size:.8rem;color:var(--gray-500)">${r.level || 0}%</span>
+        </div></td>
+        <td>${r.sort_order ?? 0}</td>
         <td><div class="actions">
-          <button class="btn-sm btn-edit" onclick="editSkill(${JSON.stringify(r).replace(/"/g, '&quot;')})">✏️ Edit</button>
-          <button class="btn-sm btn-del" onclick="deleteSkill('${r.id}')">🗑️</button>
+          <button class="btn-sm btn-edit" onclick="editSkill('${esc(r.id)}')">✏️ Edit</button>
+          <button class="btn-sm btn-del" onclick="deleteSkill('${esc(r.id)}','${esc(r.name)}')">🗑️</button>
         </div></td>
       </tr>
     `).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);padding:16px;">${e.message}</td></tr>`; }
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);padding:16px;"><strong>Error:</strong> ${esc(e.message)}</td></tr>`;
+  }
 }
 
 function skillForm(r = {}) {
   return `
     <div class="form-row">
-      <div class="form-group"><label>Nama Skill</label><input id="fName" value="${r.name || ''}" placeholder="Google Apps Script" /></div>
-      <div class="form-group"><label>Kategori</label><input id="fCat" value="${r.category || ''}" placeholder="Google Workspace" /></div>
+      <div class="form-group"><label>Nama Skill</label><input id="fName" value="${esc(r.name)}" placeholder="Google Apps Script" /></div>
+      <div class="form-group"><label>Kategori</label><input id="fCat" value="${esc(r.category)}" placeholder="Google Workspace" /></div>
     </div>
     <div class="form-row">
-      <div class="form-group"><label>Icon / Emoji</label><input id="fIcon" value="${r.icon || '⚡'}" placeholder="⚡" maxlength="2" /></div>
-      <div class="form-group"><label>Level (0-100)</label><input id="fLevel" type="number" min="0" max="100" value="${r.level || 80}" /></div>
+      <div class="form-group"><label>Icon / Emoji</label><input id="fSkillIcon" value="${esc(r.icon) || '⚡'}" placeholder="⚡" maxlength="4" /></div>
+      <div class="form-group"><label>Level (0-100)</label><input id="fLevel" type="number" min="0" max="100" value="${r.level ?? 80}" /></div>
     </div>
-    <div class="form-group"><label>Urutan (sort_order)</label><input id="fSort" type="number" value="${r.sort_order || 0}" /></div>
+    <div class="form-group"><label>Urutan (sort_order)</label><input id="fSort" type="number" value="${r.sort_order ?? 0}" /></div>
   `;
 }
 
 document.getElementById('addSkillBtn').onclick = () => openModal('Tambah Skill', skillForm(), async () => {
-  const data = { name: v('fName'), category: v('fCat'), icon: v('fIcon'), level: parseInt(v('fLevel')), sort_order: parseInt(v('fSort')) };
+  const name = v('fName').trim();
+  if (!name) { toast('Nama skill wajib diisi!', 'error'); return; }
+  const data = { name, category: v('fCat').trim(), icon: v('fSkillIcon').trim() || '⚡', level: parseInt(v('fLevel')) || 0, sort_order: parseInt(v('fSort')) || 0 };
   try { await sb('skills', 'POST', data); toast('Skill ditambahkan!', 'success'); closeModal(); loadSkills(); }
   catch(e) { toast(e.message, 'error'); }
 });
 
-function editSkill(r) {
+async function editSkill(id) {
+  let r;
+  try {
+    const rows = await sb('skills', 'GET', null, `?id=eq.${id}&limit=1`);
+    if (!rows?.length) { toast('Data skill tidak ditemukan.', 'error'); return; }
+    r = rows[0];
+  } catch(e) { toast(e.message, 'error'); return; }
+
   openModal('Edit Skill', skillForm(r), async () => {
-    const data = { name: v('fName'), category: v('fCat'), icon: v('fIcon'), level: parseInt(v('fLevel')), sort_order: parseInt(v('fSort')) };
+    const name = v('fName').trim();
+    if (!name) { toast('Nama skill wajib diisi!', 'error'); return; }
+    const data = { name, category: v('fCat').trim(), icon: v('fSkillIcon').trim() || '⚡', level: parseInt(v('fLevel')) || 0, sort_order: parseInt(v('fSort')) || 0 };
     try { await sb(`skills?id=eq.${r.id}`, 'PATCH', data); toast('Skill diperbarui!', 'success'); closeModal(); loadSkills(); }
     catch(e) { toast(e.message, 'error'); }
   });
 }
 
-async function deleteSkill(id) {
-  if (!await confirmDialog('Hapus skill?', 'Tindakan ini tidak bisa dibatalkan.')) return;
+async function deleteSkill(id, name) {
+  if (!await confirmDialog(`Hapus skill "${name || ''}"?`, 'Tindakan ini tidak bisa dibatalkan.')) return;
   try { await sb(`skills?id=eq.${id}`, 'DELETE'); toast('Skill dihapus.'); loadSkills(); }
   catch(e) { toast(e.message, 'error'); }
 }
@@ -1227,58 +1246,92 @@ async function loadProjects() {
   tbody.innerHTML = '<tr><td colspan="6"><div class="loading-rows"><div class="loading-row"></div></div></td></tr>';
   try {
     const rows = await sb('projects', 'GET', null, '?order=sort_order.asc');
-    if (!rows?.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="emoji">📦</div><p>Belum ada proyek.</p></div></td></tr>'; return; }
+    if (!rows?.length) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="emoji">📦</div><p>Belum ada proyek.</p></div></td></tr>';
+      return;
+    }
     tbody.innerHTML = rows.map(r => `
       <tr>
-        <td class="emoji-cell">${r.emoji || '📦'}</td>
-        <td><strong>${r.title}</strong></td>
-        <td><span class="tag-pill">${r.tag || '–'}</span></td>
-        <td><a href="${r.url || '#'}" target="_blank" style="color:var(--red);font-size:.8rem;">${r.url ? '🔗 Buka' : '–'}</a></td>
-        <td>${r.sort_order}</td>
+        <td class="emoji-cell">${esc(r.emoji) || '📦'}</td>
+        <td><strong>${esc(r.title)}</strong></td>
+        <td><span class="tag-pill">${esc(r.tag) || '–'}</span></td>
+        <td>${r.url ? `<a href="${esc(r.url)}" target="_blank" style="color:var(--red);font-size:.8rem;">🔗 Buka</a>` : '–'}</td>
+        <td>${r.sort_order ?? 0}</td>
         <td><div class="actions">
-          <button class="btn-sm btn-edit" onclick="editProject(${JSON.stringify(r).replace(/"/g, '&quot;')})">✏️ Edit</button>
-          <button class="btn-sm btn-del" onclick="deleteProject('${r.id}')">🗑️</button>
+          <button class="btn-sm btn-edit" onclick="editProject('${esc(r.id)}')">✏️ Edit</button>
+          <button class="btn-sm btn-del" onclick="deleteProject('${esc(r.id)}','${esc(r.title)}')">🗑️</button>
         </div></td>
       </tr>
     `).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);padding:16px;">${e.message}</td></tr>`; }
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);padding:16px;"><strong>Error:</strong> ${esc(e.message)}</td></tr>`;
+  }
 }
 
 function projectForm(r = {}) {
   const currEmoji = r.emoji || '📦';
   return `
     <div class="form-row">
-      <div class="form-group"><label>Judul Proyek</label><input id="fTitle" value="${r.title || ''}" placeholder="Sistem Absensi Otomatis" /></div>
-      <div class="form-group"><label>Tag / Kategori</label><input id="fTag" value="${r.tag || ''}" placeholder="Google Apps Script" /></div>
+      <div class="form-group"><label>Judul Proyek</label><input id="fTitle" value="${esc(r.title)}" placeholder="Sistem Absensi Otomatis" /></div>
+      <div class="form-group"><label>Tag / Kategori</label><input id="fTag" value="${esc(r.tag)}" placeholder="Google Apps Script" /></div>
     </div>
-    <div class="form-group"><label>Ringkasan (Summary)</label><input id="fSummary" value="${r.summary || ''}" placeholder="Deskripsi singkat..." /></div>
-    <div class="form-group"><label>Deskripsi Lengkap</label><textarea id="fDesc">${r.description || ''}</textarea></div>
+    <div class="form-group"><label>Ringkasan (Summary)</label><input id="fSummary" value="${esc(r.summary)}" placeholder="Deskripsi singkat..." /></div>
+    <div class="form-group"><label>Deskripsi Lengkap</label><textarea id="fDesc">${esc(r.description)}</textarea></div>
     <div class="form-row">
       <div class="form-group"><label>Emoji Icon</label>${createEmojiPickerHtml(currEmoji, 'fEmoji')}</div>
-      <div class="form-group"><label>Urutan</label><input id="fSort" type="number" value="${r.sort_order || 0}" /></div>
+      <div class="form-group"><label>Urutan</label><input id="fSort" type="number" value="${r.sort_order ?? 0}" min="0" /></div>
     </div>
-    <div class="form-group"><label>URL Demo / Repo</label><input id="fUrl" value="${r.url || ''}" placeholder="https://..." /></div>
+    <div class="form-group"><label>URL Demo / Repo</label><input id="fUrl" value="${esc(r.url)}" placeholder="https://..." /></div>
   `;
 }
 
 document.getElementById('addProjectBtn').onclick = () => openModal('Tambah Proyek', projectForm(), async () => {
-  const data = { title: v('fTitle'), tag: v('fTag'), summary: v('fSummary'), description: v('fDesc'), emoji: v('fEmoji'), sort_order: parseInt(v('fSort')), url: v('fUrl') };
+  const title = v('fTitle').trim();
+  if (!title) { toast('Judul proyek wajib diisi!', 'error'); return; }
+  const data = { title, tag: v('fTag').trim(), summary: v('fSummary').trim(), description: v('fDesc').trim(), emoji: v('fEmoji').trim() || '📦', sort_order: parseInt(v('fSort')) || 0, url: v('fUrl').trim() };
   try { await sb('projects', 'POST', data); toast('Proyek ditambahkan!', 'success'); closeModal(); loadProjects(); }
   catch(e) { toast(e.message, 'error'); }
 });
 
-function editProject(r) {
+async function editProject(id) {
+  let r;
+  try {
+    const rows = await sb('projects', 'GET', null, `?id=eq.${id}&limit=1`);
+    if (!rows?.length) { toast('Data proyek tidak ditemukan.', 'error'); return; }
+    r = rows[0];
+  } catch(e) { toast(e.message, 'error'); return; }
+
   openModal('Edit Proyek', projectForm(r), async () => {
-    const data = { title: v('fTitle'), tag: v('fTag'), summary: v('fSummary'), description: v('fDesc'), emoji: v('fEmoji'), sort_order: parseInt(v('fSort')), url: v('fUrl') };
+    const title = v('fTitle').trim();
+    if (!title) { toast('Judul proyek wajib diisi!', 'error'); return; }
+    const data = { title, tag: v('fTag').trim(), summary: v('fSummary').trim(), description: v('fDesc').trim(), emoji: v('fEmoji').trim() || '📦', sort_order: parseInt(v('fSort')) || 0, url: v('fUrl').trim() };
     try { await sb(`projects?id=eq.${r.id}`, 'PATCH', data); toast('Proyek diperbarui!', 'success'); closeModal(); loadProjects(); }
     catch(e) { toast(e.message, 'error'); }
   });
 }
 
-async function deleteProject(id) {
-  if (!await confirmDialog('Hapus proyek?', 'Data proyek akan dihapus permanen.')) return;
+async function deleteProject(id, name) {
+  if (!await confirmDialog(`Hapus proyek "${name || ''}"?`, 'Data proyek akan dihapus permanen.')) return;
   try { await sb(`projects?id=eq.${id}`, 'DELETE'); toast('Proyek dihapus.'); loadProjects(); }
   catch(e) { toast(e.message, 'error'); }
+}
+
+// ════ SERVICES ════
+// ── HTML escape helper (prevents XSS & broken attributes) ──
+function esc(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+// Safe JSON encode for inline onclick="fn(DATA)"
+function safeJson(obj) {
+  return JSON.stringify(obj)
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '&quot;');
 }
 
 // ════ SERVICES ════
@@ -1287,57 +1340,121 @@ async function loadServices() {
   tbody.innerHTML = '<tr><td colspan="6"><div class="loading-rows"><div class="loading-row"></div></div></td></tr>';
   try {
     const rows = await sb('services', 'GET', null, '?order=sort_order.asc');
-    if (!rows?.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="emoji">🛠️</div><p>Belum ada layanan.</p></div></td></tr>'; return; }
-    tbody.innerHTML = rows.map(r => `
-      <tr>
-        <td class="emoji-cell">${r.icon || '🛠️'}</td>
-        <td><strong>${r.title}</strong></td>
-        <td>${r.price || '–'}</td>
-        <td><span style="font-size:.78rem;color:var(--gray-500)">${(r.features || '').substring(0, 30)}...</span></td>
-        <td>${r.sort_order}</td>
-        <td><div class="actions">
-          <button class="btn-sm btn-edit" onclick="editService(${JSON.stringify(r).replace(/"/g, '&quot;')})">✏️ Edit</button>
-          <button class="btn-sm btn-del" onclick="deleteService('${r.id}')">🗑️</button>
-        </div></td>
-      </tr>
-    `).join('');
-  } catch(e) { tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);padding:16px;">${e.message}</td></tr>`; }
+    if (!rows?.length) {
+      tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="emoji">🛠️</div><p>Belum ada layanan.</p></div></td></tr>';
+      return;
+    }
+    tbody.innerHTML = rows.map(r => {
+      const featPreview = (r.features || '').substring(0, 30) + ((r.features || '').length > 30 ? '...' : '');
+      return `
+        <tr>
+          <td class="emoji-cell">${esc(r.icon) || '🛠️'}</td>
+          <td><strong>${esc(r.title)}</strong></td>
+          <td>${esc(r.price) || '–'}</td>
+          <td><span style="font-size:.78rem;color:var(--gray-500)">${esc(featPreview) || '–'}</span></td>
+          <td>${r.sort_order ?? 0}</td>
+          <td><div class="actions">
+            <button class="btn-sm btn-edit" onclick="editService('${esc(r.id)}')">✏️ Edit</button>
+            <button class="btn-sm btn-del" onclick="deleteService('${esc(r.id)}','${esc(r.title)}')">🗑️</button>
+          </div></td>
+        </tr>
+      `;
+    }).join('');
+  } catch(e) {
+    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger);padding:16px;"><strong>Error:</strong> ${esc(e.message)}</td></tr>`;
+  }
 }
+
+// Cache services data to avoid re-fetch on edit
+let _servicesCache = {};
 
 function serviceForm(r = {}) {
   const currEmoji = r.icon || '🛠️';
   return `
     <div class="form-row">
-      <div class="form-group"><label>Judul Layanan</label><input id="fTitle" value="${r.title || ''}" placeholder="Google Apps Script" /></div>
-      <div class="form-group"><label>Harga</label><input id="fPrice" value="${r.price || ''}" placeholder="Rp. 500.000" /></div>
+      <div class="form-group">
+        <label>Judul Layanan</label>
+        <input id="fTitle" value="${esc(r.title)}" placeholder="Google Apps Script" />
+      </div>
+      <div class="form-group">
+        <label>Harga</label>
+        <input id="fPrice" value="${esc(r.price)}" placeholder="Rp 500.000" />
+      </div>
     </div>
-    <div class="form-group"><label>Deskripsi</label><textarea id="fDesc">${r.description || ''}</textarea></div>
-    <div class="form-group"><label>Fitur / Keuntungan</label><textarea id="fFeatures" style="min-height:80px;">${r.features || ''}</textarea></div>
+    <div class="form-group">
+      <label>Deskripsi</label>
+      <textarea id="fDesc">${esc(r.description)}</textarea>
+    </div>
+    <div class="form-group">
+      <label>Fitur / Keuntungan <span style="font-weight:400;color:var(--gray-500);font-size:.75rem;">(pisahkan dengan baris baru)</span></label>
+      <textarea id="fFeatures" style="min-height:100px;">${esc(r.features)}</textarea>
+    </div>
     <div class="form-row">
-      <div class="form-group"><label>Icon / Emoji</label>${createEmojiPickerHtml(currEmoji, 'fIcon')}</div>
-      <div class="form-group"><label>Urutan</label><input id="fSort" type="number" value="${r.sort_order || 0}" /></div>
+      <div class="form-group">
+        <label>Icon / Emoji</label>
+        ${createEmojiPickerHtml(currEmoji, 'fSvcIcon')}
+      </div>
+      <div class="form-group">
+        <label>Urutan</label>
+        <input id="fSort" type="number" value="${r.sort_order ?? 0}" min="0" />
+      </div>
     </div>
   `;
 }
 
 document.getElementById('addServiceBtn').onclick = () => openModal('Tambah Layanan', serviceForm(), async () => {
-  const data = { title: v('fTitle'), price: v('fPrice'), description: v('fDesc'), features: v('fFeatures'), icon: v('fIcon'), sort_order: parseInt(v('fSort')) };
-  try { await sb('services', 'POST', data); toast('Layanan ditambahkan!', 'success'); closeModal(); loadServices(); }
-  catch(e) { toast(e.message, 'error'); }
+  const title = v('fTitle').trim();
+  if (!title) { toast('Judul layanan wajib diisi!', 'error'); return; }
+  const data = {
+    title,
+    price:       v('fPrice').trim(),
+    description: v('fDesc').trim(),
+    features:    v('fFeatures').trim(),
+    icon:        v('fSvcIcon').trim() || '🛠️',
+    sort_order:  parseInt(v('fSort')) || 0
+  };
+  try {
+    await sb('services', 'POST', data);
+    toast('Layanan ditambahkan!', 'success');
+    closeModal(); loadServices();
+  } catch(e) { toast(e.message, 'error'); }
 });
 
-function editService(r) {
+async function editService(id) {
+  // Fetch fresh data by id instead of passing via onclick (avoids injection bugs)
+  let r;
+  try {
+    const rows = await sb('services', 'GET', null, `?id=eq.${id}&limit=1`);
+    if (!rows?.length) { toast('Data layanan tidak ditemukan.', 'error'); return; }
+    r = rows[0];
+  } catch(e) { toast(e.message, 'error'); return; }
+
   openModal('Edit Layanan', serviceForm(r), async () => {
-    const data = { title: v('fTitle'), price: v('fPrice'), description: v('fDesc'), features: v('fFeatures'), icon: v('fIcon'), sort_order: parseInt(v('fSort')) };
-    try { await sb(`services?id=eq.${r.id}`, 'PATCH', data); toast('Layanan diperbarui!', 'success'); closeModal(); loadServices(); }
-    catch(e) { toast(e.message, 'error'); }
+    const title = v('fTitle').trim();
+    if (!title) { toast('Judul layanan wajib diisi!', 'error'); return; }
+    const data = {
+      title,
+      price:       v('fPrice').trim(),
+      description: v('fDesc').trim(),
+      features:    v('fFeatures').trim(),
+      icon:        v('fSvcIcon').trim() || '🛠️',
+      sort_order:  parseInt(v('fSort')) || 0
+    };
+    try {
+      await sb(`services?id=eq.${r.id}`, 'PATCH', data);
+      toast('Layanan diperbarui!', 'success');
+      closeModal(); loadServices();
+    } catch(e) { toast(e.message, 'error'); }
   });
 }
 
-async function deleteService(id) {
-  if (!await confirmDialog('Hapus layanan?', 'Tindakan ini tidak bisa dibatalkan.')) return;
-  try { await sb(`services?id=eq.${id}`, 'DELETE'); toast('Layanan dihapus.'); loadServices(); }
-  catch(e) { toast(e.message, 'error'); }
+async function deleteService(id, name) {
+  if (!await confirmDialog(`Hapus layanan "${name || ''}"?`, 'Tindakan ini tidak bisa dibatalkan.')) return;
+  try {
+    await sb(`services?id=eq.${id}`, 'DELETE');
+    toast('Layanan dihapus.');
+    loadServices();
+  } catch(e) { toast(e.message, 'error'); }
 }
 
 // ════ BLOG ════
