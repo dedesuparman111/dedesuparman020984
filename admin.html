@@ -319,6 +319,38 @@
 
     /* SORT DRAG HINT */
     .drag-hint { font-size: .75rem; color: var(--gray-500); display: flex; align-items: center; gap: 4px; margin-bottom: 10px; }
+
+    /* ICON PICKER */
+    .icon-picker-wrap { border: 1.5px solid var(--gray-100); border-radius: var(--radius); padding: 12px; background: var(--gray-50); }
+    .icon-cat-tabs { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px; }
+    .icon-cat-tab { padding: 5px 11px; border-radius: 20px; border: 1.5px solid var(--gray-100); background: var(--white); font-family: var(--font-body); font-size: .75rem; font-weight: 600; cursor: pointer; color: var(--gray-700); transition: all .15s; white-space: nowrap; }
+    .icon-cat-tab:hover { border-color: var(--red); color: var(--red); }
+    .icon-cat-tab.active { background: var(--red); color: var(--white); border-color: var(--red); }
+    .icon-picker-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 4px; max-height: 220px; overflow-y: auto; padding: 4px 0; }
+    .ipb { /* icon picker button */
+      border: 1.5px solid transparent;
+      background: var(--white);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.3rem;
+      width: 38px; height: 38px;
+      display: flex; align-items: center; justify-content: center;
+      transition: border-color .12s, background .12s, transform .08s;
+      position: relative;
+    }
+    .ipb:hover { border-color: var(--red); background: rgba(230,57,70,.06); transform: scale(1.12); }
+    .ipb.selected { border-color: var(--red); background: rgba(230,57,70,.15); }
+    .ipb[title]:hover::after {
+      content: attr(title);
+      position: absolute;
+      bottom: calc(100% + 4px);
+      left: 50%; transform: translateX(-50%);
+      background: var(--black); color: var(--white);
+      font-size: .65rem; font-family: var(--font-body);
+      padding: 3px 7px; border-radius: 4px;
+      white-space: nowrap; pointer-events: none; z-index: 10;
+    }
+    .icon-picker-empty { grid-column: 1/-1; text-align: center; padding: 20px; color: var(--gray-500); font-size: .85rem; }
   </style>
 </head>
 <body>
@@ -525,27 +557,34 @@
                   <label>Logo / Icon</label>
                   <div class="hint" style="margin-bottom:8px;">Pilih emoji, atau tempel URL gambar/logo</div>
 
-                  <!-- Quick emojis -->
-                  <div class="emoji-quick" id="lhEmojiQuick">
-                    <button class="emoji-quick-btn" onclick="setLhEmoji('🔗')">🔗</button>
-                    <button class="emoji-quick-btn" onclick="setLhEmoji('🐙')">🐙</button>
-                    <button class="emoji-quick-btn" onclick="setLhEmoji('💬')">💬</button>
-                    <button class="emoji-quick-btn" onclick="setLhEmoji('📸')">📸</button>
-                    <button class="emoji-quick-btn" onclick="setLhEmoji('▶️')">▶️</button>
-                    <button class="emoji-quick-btn" onclick="setLhEmoji('💼')">💼</button>
-                    <button class="emoji-quick-btn" onclick="setLhEmoji('🌐')">🌐</button>
-                    <button class="emoji-quick-btn" onclick="setLhEmoji('📧')">📧</button>
-                    <button class="emoji-quick-btn" onclick="setLhEmoji('🎯')">🎯</button>
-                    <button class="emoji-quick-btn" onclick="setLhEmoji('💡')">💡</button>
+                  <!-- Full Icon Picker -->
+                  <div class="icon-picker-wrap">
+                    <!-- Search -->
+                    <div style="position:relative;margin-bottom:10px;">
+                      <span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:.9rem;pointer-events:none;">🔍</span>
+                      <input type="text" id="iconSearch" placeholder="Cari icon... (github, chat, email...)" oninput="filterIcons()" style="width:100%;padding:9px 12px 9px 34px;border:1.5px solid var(--gray-100);border-radius:var(--radius);font-family:var(--font-body);font-size:.85rem;background:var(--gray-50);outline:none;transition:border-color .2s;" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--gray-100)'" />
+                    </div>
+                    <!-- Category Tabs -->
+                    <div class="icon-cat-tabs" id="iconCatTabs">
+                      <button class="icon-cat-tab active" onclick="switchIconCat(this,'all')">Semua</button>
+                      <button class="icon-cat-tab" onclick="switchIconCat(this,'social')">📱 Sosial</button>
+                      <button class="icon-cat-tab" onclick="switchIconCat(this,'dev')">💻 Dev</button>
+                      <button class="icon-cat-tab" onclick="switchIconCat(this,'comm')">💬 Komunikasi</button>
+                      <button class="icon-cat-tab" onclick="switchIconCat(this,'biz')">💼 Bisnis</button>
+                      <button class="icon-cat-tab" onclick="switchIconCat(this,'creative')">🎨 Kreatif</button>
+                      <button class="icon-cat-tab" onclick="switchIconCat(this,'misc')">✨ Lainnya</button>
+                    </div>
+                    <!-- Grid -->
+                    <div class="icon-picker-grid" id="iconPickerGrid"></div>
                   </div>
 
-                  <input type="text" id="lhIcon" placeholder="🔗 atau https://..." oninput="updateIconPreview()" />
-                  <div class="hint">Emoji langsung atau URL gambar (png, svg, jpg)</div>
+                  <input type="text" id="lhIcon" placeholder="🔗 atau https://..." oninput="updateIconPreview()" style="margin-top:10px;" />
+                  <div class="hint">Ketik emoji manual atau tempel URL gambar/logo (png, svg, jpg)</div>
 
                   <!-- Preview -->
-                  <div class="icon-preview-wrap">
+                  <div class="icon-preview-wrap" style="margin-top:10px;">
                     <div class="icon-preview-box" id="lhIconPreview">🔗</div>
-                    <div class="icon-preview-label">Preview icon</div>
+                    <div class="icon-preview-label">Preview icon yang dipilih</div>
                   </div>
                 </div>
 
@@ -708,7 +747,7 @@ function activatePanel(name) {
   document.querySelector(`.nav-item[data-panel="${name}"]`)?.classList.add('active');
   const titles = { dashboard: 'Dashboard', skills: 'Skills', projects: 'Proyek', services: 'Layanan', blog: 'Blog', messages: 'Pesan Masuk', settings: 'Pengaturan' };
   document.getElementById('topbarTitle').textContent = titles[name] || name;
-  const loaders = { skills: loadSkills, projects: loadProjects, services: loadServices, blog: loadBlog, messages: loadMessages, dashboard: loadDashboard, settings: loadLinkHubList };
+  const loaders = { skills: loadSkills, projects: loadProjects, services: loadServices, blog: loadBlog, messages: loadMessages, dashboard: loadDashboard, settings: () => { loadLinkHubList(); renderIconPicker(); } };
   if (loaders[name]) loaders[name]();
 }
 document.querySelectorAll('.nav-item').forEach(item => { item.onclick = () => activatePanel(item.dataset.panel); });
@@ -850,7 +889,121 @@ async function loadDashLinkHub() {
   }
 }
 
-// ════ LINK HUB — SETTINGS FORM ════
+// ════ LINK HUB ICON PICKER ════
+const ICON_DATA = {
+  social: [
+    {e:'📸',l:'Instagram'},{e:'🐦',l:'Twitter/X'},{e:'📘',l:'Facebook'},{e:'💼',l:'LinkedIn'},
+    {e:'▶️',l:'YouTube'},{e:'🎵',l:'TikTok'},{e:'📌',l:'Pinterest'},{e:'👻',l:'Snapchat'},
+    {e:'📱',l:'Social Media'},{e:'🔴',l:'YouTube Live'},{e:'🎙️',l:'Podcast'},
+    {e:'📣',l:'Announcement'},{e:'📡',l:'Broadcast'},{e:'🌟',l:'Featured'},
+    {e:'🏷️',l:'Tag'},{e:'💫',l:'Highlight'},{e:'🎠',l:'Carousel'},
+    {e:'🤝',l:'Network'},{e:'👥',l:'Community'},{e:'🗣️',l:'Forum'},
+  ],
+  dev: [
+    {e:'🐙',l:'GitHub'},{e:'💻',l:'Code'},{e:'🖥️',l:'Desktop App'},{e:'⌨️',l:'Keyboard'},
+    {e:'🔧',l:'Tools'},{e:'🔩',l:'Config'},{e:'⚙️',l:'Settings'},{e:'🛠️',l:'Dev Tools'},
+    {e:'📦',l:'Package/NPM'},{e:'🚀',l:'Deploy'},{e:'☁️',l:'Cloud'},
+    {e:'🗄️',l:'Database'},{e:'🔐',l:'Security'},{e:'🔑',l:'API Key'},
+    {e:'📊',l:'Analytics'},{e:'📈',l:'Dashboard'},{e:'🧪',l:'Testing'},
+    {e:'🐳',l:'Docker'},{e:'📋',l:'Docs'},{e:'🔄',l:'CI/CD'},
+    {e:'🌿',l:'Git Branch'},{e:'🏗️',l:'Build'},{e:'🧩',l:'Plugin'},
+    {e:'⚡',l:'Performance'},{e:'🔍',l:'Search/Debug'},{e:'📁',l:'Folder'},
+    {e:'💾',l:'Save/Storage'},{e:'🖱️',l:'Frontend'},{e:'📡',l:'API'},
+    {e:'🤖',l:'Bot/AI'},{e:'🧠',l:'AI/ML'},{e:'🔮',l:'AI Future'},
+  ],
+  comm: [
+    {e:'💬',l:'Chat'},{e:'📧',l:'Email'},{e:'📩',l:'Inbox'},{e:'📨',l:'Send Message'},
+    {e:'📞',l:'Phone'},{e:'📲',l:'Mobile Call'},{e:'☎️',l:'Telephone'},
+    {e:'💌',l:'Love Message'},{e:'📮',l:'Mailbox'},{e:'📬',l:'Mail Active'},
+    {e:'📝',l:'Note/Form'},{e:'🗒️',l:'Notepad'},{e:'📋',l:'Clipboard'},
+    {e:'✉️',l:'Letter'},{e:'📤',l:'Send'},{e:'📥',l:'Receive'},
+    {e:'🔔',l:'Notification'},{e:'📯',l:'Announcement'},{e:'🔊',l:'Speaker'},
+    {e:'🎤',l:'Microphone'},{e:'📡',l:'Signal'},{e:'🌐',l:'Website/Web'},
+    {e:'💻',l:'Online'},{e:'🖥️',l:'Support'},{e:'🤙',l:'Contact Me'},
+  ],
+  biz: [
+    {e:'💼',l:'Business'},{e:'🏢',l:'Office'},{e:'🏦',l:'Finance'},{e:'💰',l:'Money'},
+    {e:'💳',l:'Payment'},{e:'🧾',l:'Invoice'},{e:'📑',l:'Document'},
+    {e:'📊',l:'Report'},{e:'📈',l:'Growth'},{e:'📉',l:'Statistics'},
+    {e:'🤝',l:'Partnership'},{e:'🏆',l:'Achievement'},{e:'🎯',l:'Target'},
+    {e:'🗓️',l:'Schedule'},{e:'📆',l:'Calendar'},{e:'⏰',l:'Deadline'},
+    {e:'👔',l:'Professional'},{e:'🪙',l:'Coin'},{e:'💹',l:'Trading'},
+    {e:'📜',l:'Certificate'},{e:'🔖',l:'Bookmark'},{e:'🗃️',l:'Archive'},
+    {e:'🧮',l:'Calculator'},{e:'📌',l:'Pinned'},{e:'🔏',l:'Contract'},
+  ],
+  creative: [
+    {e:'🎨',l:'Design'},{e:'🖌️',l:'Painting'},{e:'🖊️',l:'Writing'},
+    {e:'✏️',l:'Edit'},{e:'📐',l:'Architect'},{e:'📏',l:'Ruler'},
+    {e:'🎭',l:'Theatre'},{e:'🎬',l:'Film/Video'},{e:'🎥',l:'Camera'},
+    {e:'📷',l:'Photo'},{e:'🎞️',l:'Film Roll'},{e:'🖼️',l:'Gallery'},
+    {e:'🎵',l:'Music'},{e:'🎶',l:'Melody'},{e:'🎸',l:'Guitar'},
+    {e:'🎹',l:'Piano'},{e:'🎧',l:'Audio'},{e:'🎙️',l:'Recording'},
+    {e:'✍️',l:'Author'},{e:'📚',l:'Books'},{e:'📖',l:'Read'},
+    {e:'🗺️',l:'Map'},{e:'🧭',l:'Compass'},{e:'🖋️',l:'Pen'},
+    {e:'🧵',l:'Craft'},{e:'🪡',l:'Thread'},{e:'🎨',l:'Art'},
+    {e:'🌈',l:'Rainbow'},{e:'🔴',l:'Color Red'},{e:'💙',l:'Color Blue'},
+  ],
+  misc: [
+    {e:'🔗',l:'Link'},{e:'🌐',l:'Website'},{e:'🏠',l:'Home'},
+    {e:'⭐',l:'Star/Favorite'},{e:'❤️',l:'Love'},{e:'🔥',l:'Trending'},
+    {e:'✨',l:'Sparkle'},{e:'💡',l:'Idea'},{e:'🚀',l:'Launch'},
+    {e:'🎁',l:'Gift'},{e:'🎉',l:'Celebration'},{e:'🎯',l:'Goal'},
+    {e:'🔎',l:'Search'},{e:'📍',l:'Location'},{e:'🗺️',l:'Map'},
+    {e:'🌍',l:'World'},{e:'🌙',l:'Night'},{e:'☀️',l:'Day'},
+    {e:'⚡',l:'Fast/Energy'},{e:'💎',l:'Premium'},{e:'👑',l:'Crown'},
+    {e:'🦁',l:'Brave'},{e:'🦊',l:'Fox'},{e:'🐺',l:'Wolf'},
+    {e:'🧲',l:'Attract'},{e:'🎲',l:'Random'},{e:'🃏',l:'Card'},
+    {e:'🔮',l:'Magic'},{e:'🌺',l:'Flower'},{e:'🍀',l:'Lucky'},
+    {e:'🧩',l:'Puzzle'},{e:'🪄',l:'Wand'},{e:'🏅',l:'Medal'},
+  ],
+};
+
+// Flatten all for "all" category
+const ICON_ALL = Object.values(ICON_DATA).flat();
+let currentIconCat = 'all';
+let currentIconSearch = '';
+
+function renderIconPicker() {
+  const grid = document.getElementById('iconPickerGrid');
+  if (!grid) return;
+  let source = currentIconCat === 'all' ? ICON_ALL : (ICON_DATA[currentIconCat] || []);
+  if (currentIconSearch) {
+    const q = currentIconSearch.toLowerCase();
+    source = source.filter(i => i.l.toLowerCase().includes(q) || i.e.includes(q));
+  }
+  const currentVal = document.getElementById('lhIcon')?.value || '';
+  if (!source.length) {
+    grid.innerHTML = '<div class="icon-picker-empty">Tidak ada icon yang cocok 🙁</div>';
+    return;
+  }
+  grid.innerHTML = source.map(i =>
+    `<button class="ipb${currentVal === i.e ? ' selected' : ''}" title="${i.l}" onclick="setLhEmoji('${i.e}')">${i.e}</button>`
+  ).join('');
+}
+
+function switchIconCat(tab, cat) {
+  document.querySelectorAll('.icon-cat-tab').forEach(t => t.classList.remove('active'));
+  tab.classList.add('active');
+  currentIconCat = cat;
+  renderIconPicker();
+}
+
+function filterIcons() {
+  currentIconSearch = document.getElementById('iconSearch')?.value || '';
+  // Auto switch to all when searching
+  if (currentIconSearch) {
+    currentIconCat = 'all';
+    document.querySelectorAll('.icon-cat-tab').forEach((t,i) => t.classList.toggle('active', i===0));
+  }
+  renderIconPicker();
+}
+
+function setLhEmoji(emoji) {
+  document.getElementById('lhIcon').value = emoji;
+  updateIconPreview();
+  renderIconPicker();
+}
+
 function updateIconPreview() {
   const val = document.getElementById('lhIcon').value.trim();
   const box = document.getElementById('lhIconPreview');
@@ -859,11 +1012,6 @@ function updateIconPreview() {
   } else {
     box.textContent = val || '🔗';
   }
-}
-
-function setLhEmoji(emoji) {
-  document.getElementById('lhIcon').value = emoji;
-  updateIconPreview();
 }
 
 function resetLhForm() {
@@ -876,6 +1024,10 @@ function resetLhForm() {
   document.getElementById('lhFormTitle').innerHTML = 'Tambah <span>Link Baru</span>';
   document.getElementById('lhSaveBtn').textContent = '💾 Simpan Link';
   document.getElementById('lhCancelBtn').style.display = 'none';
+  currentIconSearch = '';
+  const searchEl = document.getElementById('iconSearch');
+  if (searchEl) searchEl.value = '';
+  renderIconPicker();
 }
 
 function editLinkHub(r) {
@@ -885,6 +1037,7 @@ function editLinkHub(r) {
   document.getElementById('lhIcon').value = r.icon || '🔗';
   document.getElementById('lhSort').value = r.sort_order || 0;
   updateIconPreview();
+  renderIconPicker();
   document.getElementById('lhFormTitle').innerHTML = 'Edit <span>Link</span>';
   document.getElementById('lhSaveBtn').textContent = '✏️ Update Link';
   document.getElementById('lhCancelBtn').style.display = 'inline-flex';
