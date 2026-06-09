@@ -609,14 +609,19 @@
         <!-- SQL SETUP -->
         <div class="settings-card" style="margin-top:0;">
           <h3>Setup <span>Database SQL</span></h3>
-          <p style="color:var(--gray-500);font-size:.85rem;margin-bottom:8px;">Jalankan SQL ini di <strong>Supabase → SQL Editor</strong> untuk membuat tabel <code>link_hub</code>:</p>
-          <div class="sql-block" id="sqlBlock">
-            <button class="copy-sql-btn" onclick="copySql()">📋 Copy</button>
-<span class="cm">-- ═══════════════════════════════════════</span>
-<span class="cm">-- Tabel Link Hub untuk portofolio</span>
-<span class="cm">-- Jalankan di: Supabase → SQL Editor</span>
-<span class="cm">-- ═══════════════════════════════════════</span>
 
+          <!-- Tab switcher -->
+          <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+            <button class="icon-cat-tab active" onclick="switchSqlTab(this,'sqlLinkHub')">🔗 Link Hub</button>
+            <button class="icon-cat-tab" onclick="switchSqlTab(this,'sqlServices')">🛠️ Fix Services</button>
+          </div>
+
+          <!-- Link Hub SQL -->
+          <div id="sqlLinkHub">
+            <p style="color:var(--gray-500);font-size:.85rem;margin-bottom:8px;">Buat tabel <code>link_hub</code> di <strong>Supabase → SQL Editor</strong>:</p>
+            <div class="sql-block">
+              <button class="copy-sql-btn" onclick="copySql('link_hub')">📋 Copy</button>
+<span class="cm">-- Tabel Link Hub</span>
 <span class="kw">CREATE TABLE IF NOT EXISTS</span> link_hub (
   id          <span class="ty">uuid</span>        <span class="kw">DEFAULT</span> gen_random_uuid() <span class="kw">PRIMARY KEY</span>,
   name        <span class="ty">text</span>        <span class="kw">NOT NULL</span>,
@@ -626,28 +631,53 @@
   is_active   <span class="ty">boolean</span>     <span class="kw">DEFAULT</span> <span class="st">true</span>,
   created_at  <span class="ty">timestamptz</span> <span class="kw">DEFAULT</span> now()
 );
-
-<span class="cm">-- Index untuk performa sorting</span>
-<span class="kw">CREATE INDEX IF NOT EXISTS</span> link_hub_sort_idx
-  <span class="kw">ON</span> link_hub (sort_order <span class="kw">ASC</span>);
-
-<span class="cm">-- RLS: izinkan semua baca (publik)</span>
+<span class="kw">CREATE INDEX IF NOT EXISTS</span> link_hub_sort_idx <span class="kw">ON</span> link_hub (sort_order <span class="kw">ASC</span>);
 <span class="kw">ALTER TABLE</span> link_hub <span class="kw">ENABLE ROW LEVEL SECURITY</span>;
-
-<span class="kw">CREATE POLICY</span> <span class="st">"Public read link_hub"</span>
-  <span class="kw">ON</span> link_hub <span class="kw">FOR SELECT USING</span> (<span class="st">true</span>);
-
-<span class="kw">CREATE POLICY</span> <span class="st">"Auth write link_hub"</span>
-  <span class="kw">ON</span> link_hub <span class="kw">FOR ALL</span>
+<span class="kw">CREATE POLICY</span> <span class="st">"Public read link_hub"</span> <span class="kw">ON</span> link_hub <span class="kw">FOR SELECT USING</span> (<span class="st">true</span>);
+<span class="kw">CREATE POLICY</span> <span class="st">"Auth write link_hub"</span> <span class="kw">ON</span> link_hub <span class="kw">FOR ALL</span>
   <span class="kw">USING</span> (auth.role() = <span class="st">'authenticated'</span>)
   <span class="kw">WITH CHECK</span> (auth.role() = <span class="st">'authenticated'</span>);
-
-<span class="cm">-- Data contoh (opsional, hapus jika tidak perlu)</span>
-<span class="kw">INSERT INTO</span> link_hub (name, url, icon, sort_order) <span class="kw">VALUES</span>
-  (<span class="st">'GitHub'</span>, <span class="st">'https://github.com'</span>, <span class="st">'🐙'</span>, 1),
-  (<span class="st">'WhatsApp'</span>, <span class="st">'https://wa.me'</span>, <span class="st">'💬'</span>, 2),
-  (<span class="st">'LinkedIn'</span>, <span class="st">'https://linkedin.com'</span>, <span class="st">'💼'</span>, 3);
+            </div>
           </div>
+
+          <!-- Services Fix SQL -->
+          <div id="sqlServices" style="display:none;">
+            <div style="background:rgba(230,57,70,.08);border:1px solid rgba(230,57,70,.25);border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:.83rem;color:var(--red);">
+              ⚠️ <strong>Error:</strong> <code>Could not find the 'price' column of 'services'</code><br>
+              <span style="color:var(--gray-700);font-size:.8rem;">Kolom <code>price</code>, <code>icon</code>, dan <code>features</code> belum ada di tabel <code>services</code>. Jalankan SQL di bawah untuk menambahkannya.</span>
+            </div>
+            <div class="sql-block">
+              <button class="copy-sql-btn" onclick="copySql('services')">📋 Copy</button>
+<span class="cm">-- ═══════════════════════════════════════════</span>
+<span class="cm">-- FIX: Tambah kolom yang hilang di tabel services</span>
+<span class="cm">-- Jalankan di: Supabase → SQL Editor</span>
+<span class="cm">-- aman dijalankan berkali-kali (IF NOT EXISTS)</span>
+<span class="cm">-- ═══════════════════════════════════════════</span>
+
+<span class="kw">ALTER TABLE</span> services
+  <span class="kw">ADD COLUMN IF NOT EXISTS</span> price       <span class="ty">text</span>,
+  <span class="kw">ADD COLUMN IF NOT EXISTS</span> icon        <span class="ty">text</span>    <span class="kw">DEFAULT</span> <span class="st">'🛠️'</span>,
+  <span class="kw">ADD COLUMN IF NOT EXISTS</span> features    <span class="ty">text</span>,
+  <span class="kw">ADD COLUMN IF NOT EXISTS</span> sort_order  <span class="ty">integer</span> <span class="kw">DEFAULT</span> 0;
+
+<span class="cm">-- Pastikan RLS auth write sudah ada</span>
+<span class="kw">DO</span> $$
+<span class="kw">BEGIN</span>
+  <span class="kw">IF NOT EXISTS</span> (
+    <span class="kw">SELECT</span> 1 <span class="kw">FROM</span> pg_policies
+    <span class="kw">WHERE</span> tablename = <span class="st">'services'</span>
+      <span class="kw">AND</span> policyname = <span class="st">'Auth write services'</span>
+  ) <span class="kw">THEN</span>
+    <span class="kw">EXECUTE</span> <span class="st">'CREATE POLICY "Auth write services"
+      ON services FOR ALL
+      USING (auth.role() = ''authenticated'')
+      WITH CHECK (auth.role() = ''authenticated'')'</span>;
+  <span class="kw">END IF</span>;
+<span class="kw">END</span>
+$$;
+            </div>
+          </div>
+
         </div>
 
       </div>
@@ -1133,9 +1163,18 @@ async function deleteLinkHub(id, name) {
   } catch(e) { toast(e.message, 'error'); }
 }
 
+// ════ SQL TAB SWITCH ════
+function switchSqlTab(btn, targetId) {
+  document.querySelectorAll('#sqlLinkHub, #sqlServices').forEach(el => el.style.display = 'none');
+  document.getElementById(targetId).style.display = 'block';
+  btn.closest('.settings-card').querySelectorAll('.icon-cat-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+}
+
 // ════ SQL COPY ════
-function copySql() {
-  const sqlText = `CREATE TABLE IF NOT EXISTS link_hub (
+function copySql(type = 'link_hub') {
+  const sqls = {
+    link_hub: `CREATE TABLE IF NOT EXISTS link_hub (
   id          uuid        DEFAULT gen_random_uuid() PRIMARY KEY,
   name        text        NOT NULL,
   url         text        NOT NULL,
@@ -1144,24 +1183,40 @@ function copySql() {
   is_active   boolean     DEFAULT true,
   created_at  timestamptz DEFAULT now()
 );
-
 CREATE INDEX IF NOT EXISTS link_hub_sort_idx ON link_hub (sort_order ASC);
-
 ALTER TABLE link_hub ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Public read link_hub"
-  ON link_hub FOR SELECT USING (true);
-
-CREATE POLICY "Auth write link_hub"
-  ON link_hub FOR ALL
+CREATE POLICY "Public read link_hub" ON link_hub FOR SELECT USING (true);
+CREATE POLICY "Auth write link_hub" ON link_hub FOR ALL
   USING (auth.role() = 'authenticated')
-  WITH CHECK (auth.role() = 'authenticated');
+  WITH CHECK (auth.role() = 'authenticated');`,
 
-INSERT INTO link_hub (name, url, icon, sort_order) VALUES
-  ('GitHub', 'https://github.com', '🐙', 1),
-  ('WhatsApp', 'https://wa.me', '💬', 2),
-  ('LinkedIn', 'https://linkedin.com', '💼', 3);`;
-  navigator.clipboard.writeText(sqlText).then(() => toast('SQL disalin!', 'success')).catch(() => toast('Gagal menyalin', 'error'));
+    services: `-- FIX: Tambah kolom yang hilang di tabel services
+ALTER TABLE services
+  ADD COLUMN IF NOT EXISTS price       text,
+  ADD COLUMN IF NOT EXISTS icon        text    DEFAULT '🛠️',
+  ADD COLUMN IF NOT EXISTS features    text,
+  ADD COLUMN IF NOT EXISTS sort_order  integer DEFAULT 0;
+
+-- Pastikan RLS auth write sudah ada
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies
+    WHERE tablename = 'services'
+      AND policyname = 'Auth write services'
+  ) THEN
+    EXECUTE 'CREATE POLICY "Auth write services"
+      ON services FOR ALL
+      USING (auth.role() = ''authenticated'')
+      WITH CHECK (auth.role() = ''authenticated'')';
+  END IF;
+END
+$$;`
+  };
+  const text = sqls[type] || sqls['link_hub'];
+  navigator.clipboard.writeText(text)
+    .then(() => toast(`SQL ${type} disalin!`, 'success'))
+    .catch(() => toast('Gagal menyalin', 'error'));
 }
 
 // ════ SKILLS ════
@@ -1345,13 +1400,15 @@ async function loadServices() {
       return;
     }
     tbody.innerHTML = rows.map(r => {
-      const featPreview = (r.features || '').substring(0, 30) + ((r.features || '').length > 30 ? '...' : '');
+      // features is a PostgreSQL text[] array
+      const featArr = Array.isArray(r.features) ? r.features : [];
+      const featPreview = featArr.slice(0, 2).join(', ') + (featArr.length > 2 ? '...' : '') || '–';
       return `
         <tr>
           <td class="emoji-cell">${esc(r.icon) || '🛠️'}</td>
           <td><strong>${esc(r.title)}</strong></td>
-          <td>${esc(r.price) || '–'}</td>
-          <td><span style="font-size:.78rem;color:var(--gray-500)">${esc(featPreview) || '–'}</span></td>
+          <td>${esc(r.price_label) || '–'}</td>
+          <td><span style="font-size:.78rem;color:var(--gray-500)">${esc(featPreview)}</span></td>
           <td>${r.sort_order ?? 0}</td>
           <td><div class="actions">
             <button class="btn-sm btn-edit" onclick="editService('${esc(r.id)}')">✏️ Edit</button>
@@ -1365,20 +1422,19 @@ async function loadServices() {
   }
 }
 
-// Cache services data to avoid re-fetch on edit
-let _servicesCache = {};
-
 function serviceForm(r = {}) {
   const currEmoji = r.icon || '🛠️';
+  // features is array in DB → join with newline for textarea display
+  const featuresText = Array.isArray(r.features) ? r.features.join('\n') : (r.features || '');
   return `
     <div class="form-row">
       <div class="form-group">
         <label>Judul Layanan</label>
-        <input id="fTitle" value="${esc(r.title)}" placeholder="Google Apps Script" />
+        <input id="fTitle" value="${esc(r.title)}" placeholder="Jasa Pembuatan GAS" />
       </div>
       <div class="form-group">
         <label>Harga</label>
-        <input id="fPrice" value="${esc(r.price)}" placeholder="Rp 500.000" />
+        <input id="fPriceLabel" value="${esc(r.price_label)}" placeholder="Rp 500.000" />
       </div>
     </div>
     <div class="form-group">
@@ -1386,8 +1442,8 @@ function serviceForm(r = {}) {
       <textarea id="fDesc">${esc(r.description)}</textarea>
     </div>
     <div class="form-group">
-      <label>Fitur / Keuntungan <span style="font-weight:400;color:var(--gray-500);font-size:.75rem;">(pisahkan dengan baris baru)</span></label>
-      <textarea id="fFeatures" style="min-height:100px;">${esc(r.features)}</textarea>
+      <label>Fitur / Keuntungan <span style="font-weight:400;color:var(--gray-500);font-size:.75rem;">(1 fitur per baris)</span></label>
+      <textarea id="fFeatures" style="min-height:110px;" placeholder="Otomatisasi spreadsheet&#10;Integrasi Google Forms&#10;Support 30 hari">${esc(featuresText)}</textarea>
     </div>
     <div class="form-row">
       <div class="form-group">
@@ -1402,14 +1458,19 @@ function serviceForm(r = {}) {
   `;
 }
 
+// Convert textarea lines → clean array for Supabase text[]
+function featuresToArray(raw) {
+  return raw.split('\n').map(s => s.trim()).filter(Boolean);
+}
+
 document.getElementById('addServiceBtn').onclick = () => openModal('Tambah Layanan', serviceForm(), async () => {
   const title = v('fTitle').trim();
   if (!title) { toast('Judul layanan wajib diisi!', 'error'); return; }
   const data = {
     title,
-    price:       v('fPrice').trim(),
+    price_label: v('fPriceLabel').trim(),
     description: v('fDesc').trim(),
-    features:    v('fFeatures').trim(),
+    features:    featuresToArray(v('fFeatures')),
     icon:        v('fSvcIcon').trim() || '🛠️',
     sort_order:  parseInt(v('fSort')) || 0
   };
@@ -1421,7 +1482,6 @@ document.getElementById('addServiceBtn').onclick = () => openModal('Tambah Layan
 });
 
 async function editService(id) {
-  // Fetch fresh data by id instead of passing via onclick (avoids injection bugs)
   let r;
   try {
     const rows = await sb('services', 'GET', null, `?id=eq.${id}&limit=1`);
@@ -1434,9 +1494,9 @@ async function editService(id) {
     if (!title) { toast('Judul layanan wajib diisi!', 'error'); return; }
     const data = {
       title,
-      price:       v('fPrice').trim(),
+      price_label: v('fPriceLabel').trim(),
       description: v('fDesc').trim(),
-      features:    v('fFeatures').trim(),
+      features:    featuresToArray(v('fFeatures')),
       icon:        v('fSvcIcon').trim() || '🛠️',
       sort_order:  parseInt(v('fSort')) || 0
     };
